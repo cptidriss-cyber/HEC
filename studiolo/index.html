@@ -174,6 +174,8 @@ label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mute
 .ev-cours{background:var(--lapis);color:var(--surface)}
 .ev-tp{background:var(--gold-soft);color:var(--gold);box-shadow:inset 3px 0 0 var(--gold)}
 .ev-other{background:var(--surface);color:var(--muted);border:1px dashed var(--line)}
+.ev-exam{background:color-mix(in srgb,var(--bad) 16%,var(--surface));color:var(--bad);box-shadow:inset 3px 0 0 var(--bad)}
+.ev-dot.ev-exam{background:var(--bad)}
 .ev-dot{width:10px;height:10px;border-radius:50%;flex:none}
 .now-line{position:absolute;left:0;right:0;height:2px;background:var(--bad);z-index:2}
 .now-line::before{content:"";position:absolute;left:-4px;top:-3px;width:8px;height:8px;border-radius:50%;background:var(--bad)}
@@ -361,7 +363,7 @@ function viewToday(){
   <div class="grid g3">
     <section class="card">
       <div class="row" style="justify-content:space-between"><span class="eyebrow">Memento</span>${ex?`<span class="chip">${esc(ex.ects||"?")} ECTS</span>`:""}</div>
-      ${ex?`<div class="memento" style="margin-top:14px"><span class="d num">${daysUntil(ex.examDate)}</span><div><div style="font-weight:600">${esc(ex.name)}</div><div class="muted" style="font-size:13px">Examen ${fmtDate(ex.examDate)} · préparé à ${courseProgress(ex)}%</div></div></div>`
+      ${ex?`<div class="memento" style="margin-top:14px"><span class="d num">${daysUntil(ex.examDate)}</span><div><div style="font-weight:600">${esc(ex.name)}</div><div class="muted" style="font-size:13px">Examen ${fmtDate(ex.examDate)}${ex.examTime?" à "+esc(ex.examTime):""} · préparé à ${courseProgress(ex)}%</div></div></div>`
       :`<p class="muted" style="margin:14px 0 0">Aucune date d'examen encodée. Ajoute-la dans la fiche du cours.</p>`}
     </section>
     <section class="card">
@@ -482,7 +484,7 @@ function viewCourse(c){
     <a href="#cours" class="btn ghost" style="align-self:flex-start;padding-left:0">← Bibliothèque</a>
     <div class="eyebrow">${esc(c.code||"Cours")}${c.quadri?" · "+esc(c.quadri):""}${c.prof?" · "+esc(c.prof):""}</div>
     <h1 style="font-size:clamp(34px,5vw,52px);line-height:1.02">${esc(c.name)}</h1>
-    <div class="row">${c.ects?`<span class="chip">${esc(c.ects)} ECTS</span>`:""}${du!==null?`<span class="chip gold">${du>=0?`Examen dans ${du} j · ${fmtDate(c.examDate)}`:"Examen passé"}</span>`:""}<span class="chip">${p}% préparé</span><span class="chip">${Math.floor(mins/60)} h ${pad(mins%60)} étudiées</span><button class="btn ghost" id="editC">Modifier</button></div>
+    <div class="row">${c.ects?`<span class="chip">${esc(c.ects)} ECTS</span>`:""}${du!==null?`<span class="chip gold">${du>=0?`Examen dans ${du} j · ${fmtDate(c.examDate)}${c.examTime?" à "+c.examTime:""}`:"Examen passé"}</span>`:""}<span class="chip">${p}% préparé</span><span class="chip">${Math.floor(mins/60)} h ${pad(mins%60)} étudiées</span><button class="btn ghost" id="editC">Modifier</button></div>
   </header>
   <div class="tabs" role="tablist">${[["matiere","Matière"],["chapitres","Chapitres"],["tuteur","Tuteur"],["quiz","Quiz"]].map(([k,l])=>`<button role="tab" aria-selected="${courseTab===k}" data-tab="${k}">${l}</button>`).join("")}</div>
   <div id="tabBody"></div></div>`;
@@ -695,7 +697,7 @@ function eventsForDate(iso){
 }
 const skipLabel=iso=>{const pat=S.calendar.find(c=>c.id==="pattern");const s=pat&&(pat.skip||[]).find(x=>x.date===iso);return s?s.label:""};
 const toMin=t=>{const [h,m]=t.split(":").map(Number);return h*60+m};
-function evClass(e){return e.kind==="Cours"?"ev-cours":e.kind==="TP"?"ev-tp":"ev-other"}
+function evClass(e){return e.kind==="Cours"?"ev-cours":e.kind==="TP"?"ev-tp":e.kind==="Examen"?"ev-exam":"ev-other"}
 function viewSchedule(){
   const mon=mondayOf(new Date());mon.setDate(mon.getDate()+weekOffset*7);
   const dates=DAYS.map((_,i)=>{const d=new Date(mon);d.setDate(d.getDate()+i);return dayKey(d)});
