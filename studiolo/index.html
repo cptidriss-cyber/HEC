@@ -6,21 +6,21 @@
 <style>
 /* Layout: a scholar's studiolo — quiet rail of rooms on the left, one desk at a time; focus mode floods the room in lapis. */
 :root{
-  --bg:#F4F5F7; --surface:#FFFFFF; --ink:#14161B; --muted:#646B79; --line:#E2E4E9;
-  --lapis:#1E3A9E; --lapis-soft:#E8ECF8; --gold:#9C7A32; --gold-soft:#F3EDE0;
-  --good:#1F7A4D; --warn:#A8620F; --bad:#B3322B;
+  --bg:#FAFAF7; --surface:#FFFFFF; --ink:#1B1B1A; --muted:#6F6B65; --line:#E5E2DC;
+  --lapis:#1F3F8F; --lapis-soft:#E8ECF5; --gold:#8C6D2C; --gold-soft:#F2ECE0;
+  --good:#2F6B47; --warn:#9C5C12; --bad:#B4302A;
   --display:"Instrument Serif","Iowan Old Style","Palatino Linotype",Georgia,serif;
   --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
-  --r:14px;
+  --r:6px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0C0E13; --surface:#151821; --ink:#ECEEF3; --muted:#8D94A4; --line:#262A35;
-  --lapis:#8EA6FF; --lapis-soft:#1A2240; --gold:#D3B46E; --gold-soft:#2A2416;
-  --good:#5CC492; --warn:#E3A452; --bad:#F07A72; color-scheme:dark}}
+  --bg:#131312; --surface:#1B1B19; --ink:#EDEBE6; --muted:#9B978F; --line:#2D2C29;
+  --lapis:#9DB2F0; --lapis-soft:#1F2433; --gold:#D0B06A; --gold-soft:#29251B;
+  --good:#7CC59A; --warn:#E3A452; --bad:#EE7B70; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0C0E13; --surface:#151821; --ink:#ECEEF3; --muted:#8D94A4; --line:#262A35;
-  --lapis:#8EA6FF; --lapis-soft:#1A2240; --gold:#D3B46E; --gold-soft:#2A2416;
-  --good:#5CC492; --warn:#E3A452; --bad:#F07A72; color-scheme:dark}
+  --bg:#131312; --surface:#1B1B19; --ink:#EDEBE6; --muted:#9B978F; --line:#2D2C29;
+  --lapis:#9DB2F0; --lapis-soft:#1F2433; --gold:#D0B06A; --gold-soft:#29251B;
+  --good:#7CC59A; --warn:#E3A452; --bad:#EE7B70; color-scheme:dark}
 
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -199,6 +199,84 @@ dialog::backdrop{background:rgba(10,12,18,.45)}
   .maxim{padding:24px;min-height:0}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+/* ---- Human pass: paper, ink, hairlines; no boxes ---- */
+.card{background:none;border:0;border-top:1px solid var(--line);border-radius:0;padding:16px 0 0}
+.eyebrow{font-family:var(--display);font-style:italic;font-size:19px;letter-spacing:0;text-transform:none;font-weight:400;color:var(--muted)}
+.chip,.chip.gold,.chip.bad,.chip.warn{background:none;border:1px solid color-mix(in srgb,currentColor 35%,transparent);border-radius:3px;padding:0 6px;font-weight:500}
+.btn{border-radius:6px;padding:7px 14px}
+.btn.primary{background:var(--ink);color:var(--bg)}
+.linkish{background:none;border:0;padding:0;color:var(--muted);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--line);cursor:pointer;font-size:13px}
+.linkish:hover{color:var(--ink);text-decoration-color:currentColor}
+input[type=text],input[type=number],input[type=date],input[type=search],select,textarea{border-radius:6px;background:var(--surface)}
+.nav a{border-radius:0;padding:7px 10px;font-weight:400}
+.nav a:hover{background:none}
+.nav a[aria-current="page"]{background:none;box-shadow:none;color:var(--ink);font-weight:600}
+.nav a svg{opacity:.65}
+.rail{border-right-color:var(--line)}
+.focus{border-radius:4px}
+dialog{border-radius:8px}
+.course-card:hover{border-color:var(--line)}
+.course-card:hover h3{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
+.mail-list{padding:8px 0 0}
+.mail-paper{border-radius:4px}
+.empty{text-align:left;padding:20px 0}
+.empty .row{justify-content:flex-start!important}
+.wrap{gap:36px}
+h1{font-size:44px}
+
+.greet{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:24px;align-items:end}
+.greet h1{font-size:clamp(40px,6vw,64px);line-height:1}
+.greet-date{margin:8px 0 0;color:var(--muted);font-size:15px}
+.epigraph{margin:0;text-align:right}
+.epigraph blockquote{margin:0;font-family:var(--display);font-style:italic;font-size:20px;line-height:1.25;text-wrap:balance}
+.epigraph figcaption{margin-top:6px;font-size:12px;color:var(--muted)}
+.nudge{font-family:var(--display);font-size:24px;line-height:1.2}
+.day-meter{height:2px;background:var(--line)}
+.day-meter i{display:block;height:100%;background:var(--lapis);transition:width .6s ease}
+.today-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px}
+.bar i{border-radius:1px;background:var(--line)}
+.bar.today i{background:var(--lapis)}
+
+.session{display:flex;flex-direction:column;gap:22px;padding-top:18px;border-top:2px solid var(--ink)}
+.session-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end}
+.cd{display:flex;gap:clamp(14px,3vw,34px);align-items:flex-end;margin-top:6px}
+.cd span{display:flex;flex-direction:column}
+.cd b{font-family:var(--display);font-weight:400;font-size:clamp(64px,11vw,128px);line-height:.85;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.cd span:first-child b{color:var(--bad)}
+.cd small{font-size:12px;color:var(--muted);margin-top:6px}
+.cd .cd-s b{font-size:clamp(28px,4vw,44px);color:var(--muted)}
+.session-next{margin:12px 0 0;font-size:16px;color:var(--muted)}
+.session-next strong{color:var(--ink);font-weight:600}
+.session-facts{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted);text-align:right}
+.session-facts b{color:var(--ink);font-weight:600}
+.session-done{font-size:40px}
+.strip-wrap{overflow-x:auto;margin:0 calc(-1 * max(0px,0px))}
+.strip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(52px,1fr);border-left:1px solid var(--line);min-width:max-content}
+.sd{display:flex;flex-direction:column;gap:2px;padding:8px 6px 10px;border-right:1px solid var(--line);min-height:84px}
+.sd-w{font-size:11px;color:var(--muted);text-transform:uppercase}
+.sd-n{font-family:var(--display);font-size:22px;line-height:1}
+.sd.wk{background:repeating-linear-gradient(135deg,transparent 0 5px,color-mix(in srgb,var(--line) 60%,transparent) 5px 6px)}
+.sd.has .sd-n{color:var(--bad)}
+.sd-e{font-size:11.5px;font-weight:600;color:var(--bad);line-height:1.2;margin-top:4px}
+.sd.past{opacity:.4}
+.sd.is-today{box-shadow:inset 0 -2px 0 var(--lapis)}
+.exam-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.exam-list li{display:grid;grid-template-columns:110px 56px minmax(0,1fr) auto;gap:12px;padding:9px 0;border-top:1px solid var(--line);align-items:baseline;font-size:14px}
+.exam-list .el-d{color:var(--muted)}
+.exam-list .el-h{color:var(--muted)}
+.exam-list .el-n{overflow-wrap:anywhere}
+.exam-list .el-j{font-weight:600}
+.exam-list li.next .el-n{font-weight:600}
+.exam-list li.next .el-j{color:var(--bad)}
+.exam-list li.done{color:var(--muted);text-decoration:line-through}
+@media (max-width:860px){
+  .greet,.session-top,.today-cols{grid-template-columns:minmax(0,1fr)}
+  .epigraph{text-align:left}
+  .session-facts{text-align:left}
+  .exam-list li{grid-template-columns:88px minmax(0,1fr) auto;row-gap:0}
+  .exam-list .el-h{display:none}
+}
 </style>
 
 <div class="app">
@@ -289,7 +367,7 @@ const Store={
     },e=>{clearTimeout(timer);S.ready=true;toast("Données indisponibles ("+e.code+")");render()});
   },
   watchSettings(){
-    if(!this.db){const l=this.local("settings");if(l&&l.goal)S.settings=l;return}
+    if(!this.db){const l=this.local("settings");if(l&&l.goal){S.settings=l;render()}return}
     this.db.doc("settings/main").onSnapshot(s=>{if(s.exists)S.settings={goal:180,...s.data()};render()},()=>{});
   },
   async put(col,id,data){
@@ -331,61 +409,97 @@ addEventListener("hashchange",route);
 function viewToday(){
   const [q,a]=todayMaxim();const now=new Date();
   const mins=minutesOn(dayKey()),goal=S.settings.goal||180,pct=Math.min(1,mins/goal);
-  const st=streak();const ex=nextExam();
+  const st=streak();
   const open=S.tasks.filter(t=>!t.done).sort((x,y)=>(x.due||"9999").localeCompare(y.due||"9999"));
   const overdue=open.filter(t=>t.due&&daysUntil(t.due)<0).length;
+  const h=now.getHours();const hello=h<5?"Encore debout":h<12?"Bonjour":h<18?"Bon après-midi":"Bonsoir";
+  const name=S.settings.name?`, ${S.settings.name}`:"";
   let nudge;
-  if(mins===0)nudge="Aucune minute aujourd'hui. Une séance de 25 minutes, maintenant.";
-  else if(mins<goal)nudge=`${goal-mins} minutes avant l'objectif. Encore une séance.`;
-  else nudge="Objectif atteint. Le travail d'aujourd'hui est fait ; relis, puis repose-toi.";
-  if(ex&&daysUntil(ex.examDate)<=14&&mins<goal)nudge=`${ex.name} dans ${daysUntil(ex.examDate)} jours. ${nudge}`;
-  const C=2*Math.PI*48;
+  if(mins===0)nudge=h>=21?"Rien d'ouvert aujourd'hui. Même 25 minutes ce soir, ça compte.":"Pas encore ouvert un cours aujourd'hui. Commence par 25 minutes, le reste suivra.";
+  else if(mins<goal)nudge=`${mins} minutes faites. Il en reste ${goal-mins} pour tenir ta journée.`;
+  else nudge="Journée tenue. Relis tes notes une dernière fois, puis va dormir.";
   const week=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return{k:dayKey(d),l:d.toLocaleDateString("fr-BE",{weekday:"narrow"}),m:minutesOn(dayKey(d))}});
-  const wmax=Math.max(goal,...week.map(w=>w.m));
-  const wsum=week.reduce((s,w)=>s+w.m,0);
+  const wmax=Math.max(goal,...week.map(w=>w.m));const wsum=week.reduce((s,w)=>s+w.m,0);
   $("#view").innerHTML=`
-  <div class="hero">
-    <section class="card maxim">
-      <div class="date-line"><span class="date-num num">${now.getDate()}</span><span class="eyebrow">${now.toLocaleDateString("fr-BE",{weekday:"long"})} · ${now.toLocaleDateString("fr-BE",{month:"long",year:"numeric"})}</span></div>
-      <blockquote>« ${esc(q)} »</blockquote>
-      <cite>${esc(a)}</cite>
+  <header class="greet">
+    <div><h1>${hello}${esc(name)}.</h1><p class="greet-date">${now.toLocaleDateString("fr-BE",{weekday:"long",day:"numeric",month:"long"})}</p></div>
+    <figure class="epigraph"><blockquote>${esc(q)}</blockquote><figcaption>${esc(a)}</figcaption></figure>
+  </header>
+  ${sessionBlock()}
+  <div class="today-cols">
+    <section class="card">
+      <div class="eyebrow">Ta journée</div>
+      <p class="nudge" style="margin:8px 0 14px">${esc(nudge)}</p>
+      <div class="day-meter"><i style="width:${pct*100}%"></i></div>
+      <div class="row" style="justify-content:space-between;margin-top:8px;font-size:13px"><span class="muted num">${mins} / ${goal} min · <button class="linkish" id="editGoal">changer</button></span><span class="muted">${st?`${st} jour${st>1?"s":""} de suite`:"Pas de série en cours"}</span></div>
+      <div class="row" style="margin-top:16px"><a class="btn primary" href="#focus">Ouvrir une séance</a></div>
     </section>
-    <section class="card" style="display:flex;flex-direction:column;gap:18px;justify-content:space-between">
-      <div class="goal">
-        <svg class="ring" viewBox="0 0 112 112" role="img" aria-label="${mins} minutes sur ${goal}"><circle class="track" cx="56" cy="56" r="48"/><circle class="val" cx="56" cy="56" r="48" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct)}"/><text x="56" y="64" text-anchor="middle" class="num">${Math.round(pct*100)}%</text></svg>
-        <div class="stat"><span class="eyebrow">Étude aujourd'hui</span><b class="num">${mins}<span class="muted" style="font-size:18px"> / ${goal} min</span></b><button class="btn ghost" id="editGoal" style="padding:2px 0;align-self:flex-start">Modifier l'objectif</button></div>
-      </div>
-      <p class="nudge">${esc(nudge)}</p>
-      <div class="row"><a class="btn lapis" href="#focus">Commencer une séance</a><span class="chip gold">${st} jour${st>1?"s":""} d'affilée</span></div>
-    </section>
+    ${todayClasses()}
   </div>
-  ${todayClasses()}
-  <div class="grid g3">
-    <section class="card">
-      <div class="row" style="justify-content:space-between"><span class="eyebrow">Memento</span>${ex?`<span class="chip">${esc(ex.ects||"?")} ECTS</span>`:""}</div>
-      ${ex?`<div class="memento" style="margin-top:14px"><span class="d num">${daysUntil(ex.examDate)}</span><div><div style="font-weight:600">${esc(ex.name)}</div><div class="muted" style="font-size:13px">Examen ${fmtDate(ex.examDate)}${ex.examTime?" à "+esc(ex.examTime):""} · préparé à ${courseProgress(ex)}%</div></div></div>`
-      :`<p class="muted" style="margin:14px 0 0">Aucune date d'examen encodée. Ajoute-la dans la fiche du cours.</p>`}
-    </section>
-    <section class="card">
-      <div class="row" style="justify-content:space-between"><span class="eyebrow">Sept derniers jours</span><span class="muted num" style="font-size:13px">${Math.floor(wsum/60)} h ${pad(wsum%60)}</span></div>
-      <div class="bars">${week.map(w=>`<div class="bar ${w.k===dayKey()?"today":""}" title="${w.m} min"><i style="height:${Math.max(3,w.m/wmax*92)}px"></i><span>${w.l}</span></div>`).join("")}</div>
-    </section>
+  <div class="today-cols">
     <section class="card">
       <div class="row" style="justify-content:space-between"><span class="eyebrow">À faire</span>${overdue?`<span class="chip bad">${overdue} en retard</span>`:""}</div>
-      <div class="list" style="margin-top:8px">${open.slice(0,4).map(taskRow).join("")||`<p class="muted" style="margin:8px 0 0">Rien d'ouvert. Ajoute une tâche dans l'onglet Tâches.</p>`}</div>
+      <div class="list" style="margin-top:4px">${open.slice(0,5).map(taskRow).join("")||`<p class="muted" style="margin:8px 0 0">Liste vide. Note ce qui te trotte dans la tête dans <a href="#taches">Tâches</a>.</p>`}</div>
     </section>
-  </div>
-  ${S.courses.length?"":`<section class="card empty"><h3>Ton studiolo est vide</h3><p>Envoie tes cours à Claude dans la conversation : ils apparaîtront ici avec leur matière, leurs chapitres et leurs dates d'examen.</p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn" data-act="addCourse">Ajouter un cours à la main</button></div></section>`}`;
+    <section class="card">
+      <div class="row" style="justify-content:space-between"><span class="eyebrow">Ta semaine</span><span class="muted num" style="font-size:13px">${Math.floor(wsum/60)} h ${pad(wsum%60)} au total</span></div>
+      <div class="bars">${week.map(w=>`<div class="bar ${w.k===dayKey()?"today":""}" title="${w.m} min"><i style="height:${Math.max(2,w.m/wmax*92)}px"></i><span>${w.l}</span></div>`).join("")}</div>
+    </section>
+  </div>`;
   $("#editGoal").onclick=editGoal;
-  bindCommon();
+  tickCountdown();bindCommon();
 }
+const SHORT={fina9002:"Compta",math2008:"Maths",info2043:"Info",gest0588:"Orga",["lang-esp"]:"Espagnol",phys0956:"Physique",econ2284:"Micro",lang1965:"Anglais"};
+function exams(){
+  const out=[];S.calendar.forEach(c=>{if(c.id!=="pattern")(c.events||[]).forEach(e=>{if(e.kind==="Examen")out.push(e)})});
+  out.sort((x,y)=>(x.date+x.start).localeCompare(y.date+y.start));
+  const seen=new Set();return out.filter(e=>{const k=(e.course||e.title)+e.date;if(seen.has(k))return false;seen.add(k);return true});
+}
+const examName=e=>{const c=courseById(e.course);return c?c.name:e.title.replace(/^Examen écrit – /,"").replace(/\s*\(.*\)$/,"")};
+const examAt=e=>new Date(`${e.date}T${e.start}:00`);
+function sessionBlock(){
+  const ex=exams();if(!ex.length)return "";
+  const now=new Date();const next=ex.find(e=>examAt(e)>now);
+  if(!next)return `<section class="session"><div class="eyebrow">Session de janvier</div><h2 class="session-done">Session terminée. Bravo.</h2></section>`;
+  const first=ex[0],last=ex[ex.length-1];const started=examAt(first)<=now;
+  const pat=S.calendar.find(c=>c.id==="pattern");
+  let blocus="";if(pat&&pat.to){const b=new Date(pat.to+"T12:00");b.setDate(b.getDate()+1);const bk=dayKey(b);const dB=daysUntil(bk);blocus=dB>0?`Blocus dans ${dB} jour${dB>1?"s":""}, dès le ${fmtDate(bk).replace(/\.$/,"")}`:started?"":"Blocus en cours"}
+  const d0=new Date(first.date+"T12:00"),d1=new Date(last.date+"T12:00");const days=[];
+  for(let d=new Date(d0);d<=d1;d.setDate(d.getDate()+1))days.push(dayKey(d));
+  const byDay={};ex.forEach(e=>(byDay[e.date]=byDay[e.date]||[]).push(e));
+  const left=ex.filter(e=>examAt(e)>now).length;
+  return `<section class="session">
+    <div class="session-top">
+      <div>
+        <div class="eyebrow">${started?"Session en cours":"Avant la session de janvier"}</div>
+        <div class="cd" aria-live="off"><span><b data-cd="d">–</b><small>jours</small></span><span><b data-cd="h">–</b><small>heures</small></span><span><b data-cd="m">–</b><small>min</small></span><span class="cd-s"><b data-cd="s">–</b><small>s</small></span></div>
+        <p class="session-next">avant <strong>${esc(examName(next))}</strong>, ${new Date(next.date+"T12:00").toLocaleDateString("fr-BE",{weekday:"long",day:"numeric",month:"long"})} à ${next.start.replace(":00","h").replace(":","h")}.</p>
+      </div>
+      <ul class="session-facts">
+        <li><b class="num">${left}</b> examen${left>1?"s":""} à passer</li>
+        ${blocus?`<li>${esc(blocus)}</li>`:""}
+        <li>Dernier : ${esc(fmtDate(last.date).replace(/\.$/,""))}</li>
+      </ul>
+    </div>
+    <div class="strip-wrap"><div class="strip">${days.map(k=>{const d=new Date(k+"T12:00");const es=byDay[k]||[];const past=k<dayKey();const wk=d.getDay()===0||d.getDay()===6;return `<div class="sd ${es.length?"has":""} ${past?"past":""} ${wk?"wk":""} ${k===dayKey()?"is-today":""}" title="${esc(es.map(e=>examName(e)+" · "+e.start).join(" / "))}"><span class="sd-w">${d.toLocaleDateString("fr-BE",{weekday:"narrow"})}</span><span class="sd-n num">${d.getDate()}</span>${es.map(e=>`<span class="sd-e">${esc(SHORT[e.course]||examName(e).split(" ")[0])}</span>`).join("")}</div>`}).join("")}</div></div>
+    <ol class="exam-list">${ex.map(e=>{const du=daysUntil(e.date);const done=examAt(e)<now;return `<li class="${done?"done":""} ${e===next?"next":""}"><span class="num el-d">${esc(new Date(e.date+"T12:00").toLocaleDateString("fr-BE",{weekday:"short",day:"numeric",month:"short"}))}</span><span class="num el-h">${e.start.replace(":00","h").replace(":","h")}</span><span class="el-n">${esc(examName(e))}${e.note?` <em class="muted">· ${esc(e.note.toLowerCase())}</em>`:""}</span><span class="num el-j">${done?"fait":du===0?"aujourd'hui":"J−"+du}</span></li>`}).join("")}</ol>
+  </section>`;
+}
+function tickCountdown(){
+  const els=document.querySelectorAll("[data-cd]");if(!els.length)return;
+  const next=exams().find(e=>examAt(e)>new Date());if(!next)return;
+  let s=Math.max(0,Math.floor((examAt(next)-Date.now())/1000));
+  const v={d:Math.floor(s/86400),h:Math.floor(s%86400/3600),m:Math.floor(s%3600/60),s:s%60};
+  els.forEach(el=>{const t=el.dataset.cd==="d"?String(v.d):pad(v[el.dataset.cd]);if(el.textContent!==t)el.textContent=t});
+}
+setInterval(tickCountdown,1000);
 function todayClasses(){
   const evs=eventsForDate(dayKey());if(!S.calendar.length)return "";
   const nowM=new Date().getHours()*60+new Date().getMinutes();
-  let next=null;for(let i=0;i<14&&!next;i++){const d=new Date();d.setDate(d.getDate()+i);const k=dayKey(d);const e=eventsForDate(k).find(e=>e.kind==="Cours"&&(i>0||toMin(e.start)>nowM));if(e)next={...e,date:k}}
-  return `<section class="card"><div class="row" style="justify-content:space-between"><span class="eyebrow">Au programme aujourd'hui</span><a class="btn ghost" href="#horaire" style="padding:0">Horaire →</a></div>
-  <div class="list" style="margin-top:6px">${evs.map(e=>evRow(e).replace('class="item"',`class="item ${toMin(e.end)<nowM?"done":""}"`)).join("")||`<p class="muted" style="margin:6px 0 0">${skipLabel(dayKey())||"Pas de cours aujourd'hui."} Journée d'étude libre : c'est le moment d'avancer.</p>`}</div>
-  ${next?`<p class="muted" style="margin:12px 0 0;font-size:13px">Prochain cours : <strong style="color:var(--ink)">${esc(next.title)}</strong>, ${next.date===dayKey()?"aujourd'hui":fmtDate(next.date)} à ${esc(next.start)}.</p>`:""}</section>`;
+  let next=null;for(let i=0;i<14&&!next;i++){const d=new Date();d.setDate(d.getDate()+i);const k=dayKey(d);const e=eventsForDate(k).find(e=>(e.kind==="Cours"||e.kind==="Examen")&&(i>0||toMin(e.start)>nowM));if(e)next={...e,date:k}}
+  return `<section class="card"><div class="row" style="justify-content:space-between"><span class="eyebrow">Au programme</span><a class="linkish" href="#horaire">voir l'horaire</a></div>
+  <div class="list" style="margin-top:4px">${evs.map(e=>evRow(e).replace('class="item"',`class="item ${toMin(e.end)<nowM?"done":""}"`)).join("")||`<p class="muted" style="margin:8px 0 0">${skipLabel(dayKey())||"Pas de cours aujourd'hui."} La journée est à toi.</p>`}</div>
+  ${next?`<p class="muted" style="margin:12px 0 0;font-size:13px">Ensuite : ${esc(next.title)}, ${next.date===dayKey()?"aujourd'hui":fmtDate(next.date)} à ${esc(next.start.replace(":00","h").replace(":","h"))}.</p>`:""}</section>`;
 }
 function editGoal(){
   const d=$("#dlg");d.innerHTML=`<form class="form" method="dialog" id="gf"><h2 style="font-size:28px">Objectif quotidien</h2><label>Minutes d'étude par jour<input type="number" id="goalIn" min="15" max="720" step="15" value="${S.settings.goal||180}"></label><div class="row" style="justify-content:flex-end"><button class="btn ghost" value="cancel">Annuler</button><button class="btn primary" value="ok">Enregistrer</button></div></form>`;
