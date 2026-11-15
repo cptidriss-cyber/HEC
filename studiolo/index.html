@@ -1,0 +1,598 @@
+<title>Studiolo HEC</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: a scholar's studiolo — quiet rail of rooms on the left, one desk at a time; focus mode floods the room in lapis. */
+:root{
+  --bg:#F4F5F7; --surface:#FFFFFF; --ink:#14161B; --muted:#646B79; --line:#E2E4E9;
+  --lapis:#1E3A9E; --lapis-soft:#E8ECF8; --gold:#9C7A32; --gold-soft:#F3EDE0;
+  --good:#1F7A4D; --warn:#A8620F; --bad:#B3322B;
+  --display:"Instrument Serif","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --r:14px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0C0E13; --surface:#151821; --ink:#ECEEF3; --muted:#8D94A4; --line:#262A35;
+  --lapis:#8EA6FF; --lapis-soft:#1A2240; --gold:#D3B46E; --gold-soft:#2A2416;
+  --good:#5CC492; --warn:#E3A452; --bad:#F07A72; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0C0E13; --surface:#151821; --ink:#ECEEF3; --muted:#8D94A4; --line:#262A35;
+  --lapis:#8EA6FF; --lapis-soft:#1A2240; --gold:#D3B46E; --gold-soft:#2A2416;
+  --good:#5CC492; --warn:#E3A452; --bad:#F07A72; color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--lapis);outline-offset:2px;border-radius:6px}
+h1,h2,h3{font-family:var(--display);font-weight:400;letter-spacing:-.01em;text-wrap:balance;margin:0}
+.app{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100%}
+.rail{position:sticky;top:0;height:100vh;padding:28px 18px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:28px;background:var(--bg)}
+.brand{font-family:var(--display);font-size:30px;line-height:1;padding-left:10px}
+.brand small{display:block;font-family:var(--body);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:10px;color:var(--muted);text-decoration:none;font-weight:500}
+.nav a svg{width:18px;height:18px;flex:none}
+.nav a:hover{color:var(--ink);background:var(--surface)}
+.nav a[aria-current="page"]{color:var(--ink);background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.rail-foot{margin-top:auto;font-size:12px;color:var(--muted);padding-left:10px}
+main{padding-block:40px 120px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));min-width:0}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;min-width:0}
+.card h3{font-size:22px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:999px;cursor:pointer;font-weight:500;font-size:14px;text-decoration:none;color:var(--ink)}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn.lapis{background:var(--lapis);color:#fff;border-color:var(--lapis)}
+:root[data-theme="dark"] .btn.lapis{color:#0C0E13}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.lapis{color:#0C0E13}}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn:disabled{opacity:.5;cursor:default}
+input[type=text],input[type=number],input[type=date],input[type=search],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+textarea{resize:vertical;min-height:120px;line-height:1.5}
+label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);font-weight:500;min-width:0}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--lapis-soft);color:var(--lapis);font-variant-numeric:tabular-nums}
+.chip.gold{background:var(--gold-soft);color:var(--gold)}
+.chip.bad{background:color-mix(in srgb,var(--bad) 14%,transparent);color:var(--bad)}
+.chip.warn{background:color-mix(in srgb,var(--warn) 14%,transparent);color:var(--warn)}
+.num{font-variant-numeric:tabular-nums}
+.note{font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:12px;padding:12px 14px}
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty h3{color:var(--ink);font-size:26px;margin-bottom:6px}
+
+/* Today */
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px}
+.maxim{padding:32px;display:flex;flex-direction:column;gap:18px;justify-content:space-between;min-height:260px}
+.maxim blockquote{margin:0;font-family:var(--display);font-style:italic;font-size:clamp(26px,3.2vw,38px);line-height:1.15;text-wrap:balance}
+.maxim cite{font-style:normal;font-size:13px;color:var(--muted)}
+.date-line{display:flex;align-items:baseline;gap:14px}
+.date-num{font-family:var(--display);font-size:56px;line-height:.8;color:var(--lapis)}
+.nudge{font-family:var(--display);font-size:24px;line-height:1.2}
+.goal{display:flex;gap:20px;align-items:center}
+.ring{width:112px;height:112px;flex:none}
+.ring circle{fill:none;stroke-width:8}
+.ring .track{stroke:var(--line)}
+.ring .val{stroke:var(--lapis);stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .6s ease}
+.ring text{fill:var(--ink);font-family:var(--display);font-size:28px}
+.stat{display:flex;flex-direction:column;gap:2px}
+.stat b{font-family:var(--display);font-weight:400;font-size:34px;line-height:1}
+.bars{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:120px;margin-top:8px}
+.bar{display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;min-width:0}
+.bar i{display:block;width:100%;max-width:28px;border-radius:6px 6px 2px 2px;background:var(--lapis-soft);min-height:3px}
+.bar.today i{background:var(--lapis)}
+.bar span{font-size:11px;color:var(--muted)}
+.list{display:flex;flex-direction:column}
+.item{display:flex;gap:12px;align-items:center;padding:11px 0;border-top:1px solid var(--line);min-width:0}
+.item:first-child{border-top:0}
+.item .grow{flex:1;min-width:0}
+.item .t{font-weight:500;overflow-wrap:anywhere}
+.item .s{font-size:12px;color:var(--muted)}
+.check{appearance:none;width:20px;height:20px;border:1.5px solid var(--muted);border-radius:50%;cursor:pointer;flex:none;display:grid;place-items:center;margin:0}
+.check:checked{background:var(--lapis);border-color:var(--lapis)}
+.check:checked::after{content:"";width:6px;height:10px;border:solid var(--surface);border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.done .t{text-decoration:line-through;color:var(--muted)}
+.memento{display:flex;gap:16px;align-items:center}
+.memento .d{font-family:var(--display);font-size:48px;line-height:.9;color:var(--gold);min-width:64px;text-align:center}
+
+/* Focus */
+.focus{border-radius:22px;background:var(--lapis);color:#fff;padding:40px 28px;display:flex;flex-direction:column;align-items:center;gap:22px;text-align:center;position:relative;overflow:hidden}
+:root[data-theme="dark"] .focus{background:#16245F}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .focus{background:#16245F}}
+.focus .clock{font-family:var(--display);font-size:clamp(84px,16vw,168px);line-height:.9;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.focus .lbl{font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.75;font-weight:600}
+.focus select,.focus input{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff;max-width:320px}
+.focus select option{color:#14161B}
+.focus .btn{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);color:#fff}
+.focus .btn.on{background:#fff;color:#14161B;border-color:#fff}
+.focus .bar-prog{width:min(420px,100%);height:3px;background:rgba(255,255,255,.2);border-radius:3px;overflow:hidden}
+.focus .bar-prog i{display:block;height:100%;background:#E9D29A;width:0;transition:width 1s linear}
+.focus .quote{font-family:var(--display);font-style:italic;font-size:20px;max-width:560px;opacity:.9}
+
+/* Courses */
+.course-card{cursor:pointer;display:flex;flex-direction:column;gap:12px;text-align:left;font:inherit;color:inherit}
+.course-card:hover{border-color:var(--muted)}
+.course-card h3{font-size:24px;line-height:1.1}
+.prog{height:4px;background:var(--line);border-radius:4px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--lapis)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{border:0;background:none;padding:10px 12px;cursor:pointer;color:var(--muted);font-weight:500;border-bottom:2px solid transparent;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-color:var(--ink)}
+.prose{max-width:68ch;overflow-wrap:anywhere}
+.prose h1,.prose h2,.prose h3{margin:18px 0 6px}
+.prose h1{font-size:28px}.prose h2{font-size:24px}.prose h3{font-size:20px}
+.prose p{margin:8px 0}
+.prose ul,.prose ol{padding-left:22px;margin:8px 0}
+.prose code{background:var(--bg);padding:1px 5px;border-radius:5px;font-size:.92em}
+.prose strong{font-weight:600}
+.q{padding:16px 0;border-top:1px solid var(--line)}
+.q:first-child{border-top:0}
+.q .opts{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.q .opts button{text-align:left;border:1px solid var(--line);background:var(--bg);padding:9px 12px;border-radius:10px;cursor:pointer}
+.q .opts button.right{border-color:var(--good);color:var(--good)}
+.q .opts button.wrong{border-color:var(--bad);color:var(--bad)}
+.q .why{font-size:13px;color:var(--muted);margin-top:8px}
+
+/* Mail */
+.mail-item{display:flex;flex-direction:column;gap:2px;padding:12px 0;border-top:1px solid var(--line);min-width:0}
+.mail-item:first-child{border-top:0}
+.mail-item .subj{font-weight:600;overflow-wrap:anywhere}
+.mail-item .meta{font-size:12px;color:var(--muted)}
+.mail-item .prev{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+pre.raw{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;background:var(--bg);padding:12px;border-radius:10px;max-height:420px;overflow:auto}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(90px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+dialog{border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--ink);padding:24px;width:min(560px,calc(100vw - 32px))}
+dialog::backdrop{background:rgba(10,12,18,.45)}
+.form{display:grid;gap:14px}
+.form .g2{gap:12px}
+
+@media (max-width:860px){
+  .app{grid-template-columns:minmax(0,1fr)}
+  .rail{position:fixed;top:auto;bottom:0;left:0;right:0;height:auto;flex-direction:row;padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));border-right:0;border-top:1px solid var(--line);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  .brand,.rail-foot{display:none}
+  .nav{flex-direction:row;justify-content:space-around;width:100%}
+  .nav a{flex-direction:column;gap:3px;font-size:10px;padding:6px 4px}
+  .nav a[aria-current="page"]{box-shadow:none;background:none;color:var(--lapis)}
+  main{padding-block:24px 110px}
+  .hero,.g2,.g3{grid-template-columns:minmax(0,1fr)}
+  .maxim{padding:24px;min-height:0}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="brand">Studiolo<small>HEC Liège</small></div>
+    <nav class="nav" aria-label="Sections">
+      <a href="#aujourdhui" data-view="aujourdhui"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Aujourd'hui</a>
+      <a href="#focus" data-view="focus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg>Séance</a>
+      <a href="#cours" data-view="cours"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5zM13 4h5.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H13z"/></svg>Cours</a>
+      <a href="#taches" data-view="taches"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1.2 1.2L7 5M3.5 12l1.2 1.2L7 11M3.5 18l1.2 1.2L7 17"/></svg>Tâches</a>
+      <a href="#courrier" data-view="courrier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></svg>Courrier</a>
+    </nav>
+    <div class="rail-foot" id="storeMode">Connexion…</div>
+  </aside>
+  <main><div class="wrap" id="view"></div></main>
+</div>
+
+<dialog id="dlg"></dialog>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ---------- data ---------- */
+const MAXIMS=[
+ ["Ce n'est pas parce que les choses sont difficiles que nous n'osons pas, c'est parce que nous n'osons pas qu'elles sont difficiles.","Sénèque, Lettres à Lucilius"],
+ ["Pendant qu'on la diffère, la vie passe.","Sénèque, Lettres à Lucilius, I"],
+ ["Ce qui fait obstacle à l'action fait avancer l'action. Ce qui barre la route devient la route.","Marc Aurèle, Pensées, V"],
+ ["Tout ce qui est précieux est aussi difficile que rare.","Spinoza, Éthique, V"],
+ ["Plutôt la tête bien faite que bien pleine.","Montaigne, Essais, I, 26"],
+ ["Tout le malheur des hommes vient d'une seule chose, qui est de ne savoir pas demeurer en repos dans une chambre.","Pascal, Pensées"],
+ ["Il faut toujours tenir au difficile.","Rilke, Lettres à un jeune poète"],
+ ["Les grandes choses ne se font pas par impulsion, mais par une série de petites choses assemblées.","Van Gogh, lettre à Théo, 1882"],
+ ["Deviens ce que tu es.","Nietzsche, d'après Pindare"],
+ ["L'attention est la forme la plus rare et la plus pure de la générosité.","Simone Weil"],
+ ["Il faut imaginer Sisyphe heureux.","Camus, Le Mythe de Sisyphe"],
+ ["Hâte-toi lentement.","Festina lente, devise d'Auguste"],
+ ["Carpe diem, quam minimum credula postero.","Horace, Odes, I, 11"],
+ ["Nous sommes ce que nous faisons de manière répétée.","d'après Aristote, Éthique à Nicomaque"],
+];
+const S={courses:[],tasks:[],days:[],settings:{goal:180},ready:false};
+const MAIL_SERVER="Microsoft 365";
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+const dayKey=(d=new Date())=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const daysUntil=iso=>{if(!iso)return null;const a=new Date(dayKey()+"T00:00");const b=new Date(iso+"T00:00");return Math.round((b-a)/864e5)};
+const fmtDate=iso=>iso?new Date(iso+"T12:00").toLocaleDateString("fr-BE",{weekday:"short",day:"numeric",month:"short"}):"";
+const todayMaxim=()=>{const n=Math.floor(new Date(dayKey()+"T00:00")/864e5);return MAXIMS[n%MAXIMS.length]};
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>t.hidden=true,2400)}
+function md(src){
+  const lines=esc(src).split("\n");let out="",list=null;
+  const inline=s=>s.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/(^|[^*])\*(?!\s)(.+?)\*/g,"$1<em>$2</em>").replace(/`(.+?)`/g,"<code>$1</code>");
+  const close=()=>{if(list){out+=`</${list}>`;list=null}};
+  for(const l of lines){
+    let m;
+    if(m=l.match(/^(#{1,3})\s+(.*)/)){close();out+=`<h${m[1].length+1}>${inline(m[2])}</h${m[1].length+1}>`}
+    else if(m=l.match(/^\s*[-*•]\s+(.*)/)){if(list!=="ul"){close();out+="<ul>";list="ul"}out+=`<li>${inline(m[1])}</li>`}
+    else if(m=l.match(/^\s*\d+[.)]\s+(.*)/)){if(list!=="ol"){close();out+="<ol>";list="ol"}out+=`<li>${inline(m[1])}</li>`}
+    else if(!l.trim()){close()}
+    else{close();out+=`<p>${inline(l)}</p>`}
+  }
+  close();return out;
+}
+const cap=name=>(window.claude&&window.claude.use)?window.claude.use(name).catch(()=>null):Promise.resolve(null);
+
+/* ---------- store: shared db when available, browser storage otherwise ---------- */
+const Store={
+  db:null,mode:"local",
+  local(col){try{return JSON.parse(localStorage.getItem("studiolo:"+col)||"[]")}catch{return[]}},
+  saveLocal(col,arr){try{localStorage.setItem("studiolo:"+col,JSON.stringify(arr))}catch{}},
+  async init(){
+    const db=await cap("db");
+    if(db){this.db=db;this.mode="db"}
+    $("#storeMode").textContent=this.mode==="db"?"Synchronisé":"Mode local (ce navigateur)";
+    for(const col of ["courses","tasks","days"])this.watch(col);
+    this.watchSettings();
+  },
+  watch(col){
+    if(!this.db){S[col]=this.local(col);S.ready=true;render();return}
+    const timer=setTimeout(()=>{if(!S.ready){S.ready=true;render()}},10000);
+    this.db.collection(col).onSnapshot(snap=>{
+      S[col]=snap.docs.map(d=>({id:d.id,...d.data()}));
+      if(!snap.metadata.fromCache){clearTimeout(timer)}
+      S.ready=true;render();
+    },e=>{clearTimeout(timer);S.ready=true;toast("Données indisponibles ("+e.code+")");render()});
+  },
+  watchSettings(){
+    if(!this.db){const l=this.local("settings");if(l&&l.goal)S.settings=l;return}
+    this.db.doc("settings/main").onSnapshot(s=>{if(s.exists)S.settings={goal:180,...s.data()};render()},()=>{});
+  },
+  async put(col,id,data){
+    if(this.db){try{await this.db.collection(col).doc(id).set(data)}catch(e){toast("Échec d'enregistrement ("+e.code+")")}return}
+    const arr=this.local(col).filter(x=>x.id!==id);arr.push({id,...data});this.saveLocal(col,arr);S[col]=arr;render();
+  },
+  async del(col,id){
+    if(this.db){try{await this.db.collection(col).doc(id).delete()}catch(e){toast("Échec de suppression ("+e.code+")")}return}
+    const arr=this.local(col).filter(x=>x.id!==id);this.saveLocal(col,arr);S[col]=arr;render();
+  },
+  async setSettings(v){
+    S.settings=v;
+    if(this.db){try{await this.db.doc("settings/main").set(v)}catch(e){toast("Échec ("+e.code+")")}}
+    else{try{localStorage.setItem("studiolo:settings",JSON.stringify(v))}catch{}render()}
+  }
+};
+const strip=o=>{const {id,...r}=o;return r};
+const courseById=id=>S.courses.find(c=>c.id===id);
+const minutesOn=k=>(S.days.find(d=>d.id===k)||{}).minutes||0;
+function streak(){let n=0;const d=new Date();if(minutesOn(dayKey(d))<25)d.setDate(d.getDate()-1);while(minutesOn(dayKey(d))>=25){n++;d.setDate(d.getDate()-1)}return n}
+function courseProgress(c){const ch=c.chapters||[];return ch.length?Math.round(ch.filter(x=>x.done).length/ch.length*100):0}
+function nextExam(){return S.courses.filter(c=>c.examDate&&daysUntil(c.examDate)>=0).sort((a,b)=>a.examDate.localeCompare(b.examDate))[0]}
+
+/* ---------- router ---------- */
+const VIEWS={aujourdhui:viewToday,focus:viewFocus,cours:viewCourses,taches:viewTasks,courrier:viewMail};
+let current="aujourdhui",courseOpen=null,courseTab="matiere";
+function route(){const h=location.hash.slice(1);current=VIEWS[h]?h:(h.startsWith("cours-")?"cours":"aujourdhui");courseOpen=h.startsWith("cours-")?h.slice(6):null;render();window.scrollTo(0,0)}
+function render(){
+  document.querySelectorAll(".nav a").forEach(a=>{if(a.dataset.view===current)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  if(current==="focus"&&Timer.mounted&&$("#clock")){Timer.paint();return}
+  if(current==="courrier"&&$("#mailRoot"))return; // keep mail results while data syncs
+  if(current==="cours"&&courseOpen&&$("#courseRoot")&&$("#courseRoot").dataset.id===courseOpen&&document.activeElement&&document.activeElement.closest("#courseRoot")){return}
+  Timer.mounted=false;
+  VIEWS[current]();
+}
+addEventListener("hashchange",route);
+
+/* ---------- Aujourd'hui ---------- */
+function viewToday(){
+  const [q,a]=todayMaxim();const now=new Date();
+  const mins=minutesOn(dayKey()),goal=S.settings.goal||180,pct=Math.min(1,mins/goal);
+  const st=streak();const ex=nextExam();
+  const open=S.tasks.filter(t=>!t.done).sort((x,y)=>(x.due||"9999").localeCompare(y.due||"9999"));
+  const overdue=open.filter(t=>t.due&&daysUntil(t.due)<0).length;
+  let nudge;
+  if(mins===0)nudge="Aucune minute aujourd'hui. Une séance de 25 minutes, maintenant.";
+  else if(mins<goal)nudge=`${goal-mins} minutes avant l'objectif. Encore une séance.`;
+  else nudge="Objectif atteint. Le travail d'aujourd'hui est fait ; relis, puis repose-toi.";
+  if(ex&&daysUntil(ex.examDate)<=14&&mins<goal)nudge=`${ex.name} dans ${daysUntil(ex.examDate)} jours. ${nudge}`;
+  const C=2*Math.PI*48;
+  const week=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-6+i);return{k:dayKey(d),l:d.toLocaleDateString("fr-BE",{weekday:"narrow"}),m:minutesOn(dayKey(d))}});
+  const wmax=Math.max(goal,...week.map(w=>w.m));
+  const wsum=week.reduce((s,w)=>s+w.m,0);
+  $("#view").innerHTML=`
+  <div class="hero">
+    <section class="card maxim">
+      <div class="date-line"><span class="date-num num">${now.getDate()}</span><span class="eyebrow">${now.toLocaleDateString("fr-BE",{weekday:"long"})} · ${now.toLocaleDateString("fr-BE",{month:"long",year:"numeric"})}</span></div>
+      <blockquote>« ${esc(q)} »</blockquote>
+      <cite>${esc(a)}</cite>
+    </section>
+    <section class="card" style="display:flex;flex-direction:column;gap:18px;justify-content:space-between">
+      <div class="goal">
+        <svg class="ring" viewBox="0 0 112 112" role="img" aria-label="${mins} minutes sur ${goal}"><circle class="track" cx="56" cy="56" r="48"/><circle class="val" cx="56" cy="56" r="48" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct)}"/><text x="56" y="64" text-anchor="middle" class="num">${Math.round(pct*100)}%</text></svg>
+        <div class="stat"><span class="eyebrow">Étude aujourd'hui</span><b class="num">${mins}<span class="muted" style="font-size:18px"> / ${goal} min</span></b><button class="btn ghost" id="editGoal" style="padding:2px 0;align-self:flex-start">Modifier l'objectif</button></div>
+      </div>
+      <p class="nudge">${esc(nudge)}</p>
+      <div class="row"><a class="btn lapis" href="#focus">Commencer une séance</a><span class="chip gold">${st} jour${st>1?"s":""} d'affilée</span></div>
+    </section>
+  </div>
+  <div class="grid g3">
+    <section class="card">
+      <div class="row" style="justify-content:space-between"><span class="eyebrow">Memento</span>${ex?`<span class="chip">${esc(ex.ects||"?")} ECTS</span>`:""}</div>
+      ${ex?`<div class="memento" style="margin-top:14px"><span class="d num">${daysUntil(ex.examDate)}</span><div><div style="font-weight:600">${esc(ex.name)}</div><div class="muted" style="font-size:13px">Examen ${fmtDate(ex.examDate)} · préparé à ${courseProgress(ex)}%</div></div></div>`
+      :`<p class="muted" style="margin:14px 0 0">Aucune date d'examen encodée. Ajoute-la dans la fiche du cours.</p>`}
+    </section>
+    <section class="card">
+      <div class="row" style="justify-content:space-between"><span class="eyebrow">Sept derniers jours</span><span class="muted num" style="font-size:13px">${Math.floor(wsum/60)} h ${pad(wsum%60)}</span></div>
+      <div class="bars">${week.map(w=>`<div class="bar ${w.k===dayKey()?"today":""}" title="${w.m} min"><i style="height:${Math.max(3,w.m/wmax*92)}px"></i><span>${w.l}</span></div>`).join("")}</div>
+    </section>
+    <section class="card">
+      <div class="row" style="justify-content:space-between"><span class="eyebrow">À faire</span>${overdue?`<span class="chip bad">${overdue} en retard</span>`:""}</div>
+      <div class="list" style="margin-top:8px">${open.slice(0,4).map(taskRow).join("")||`<p class="muted" style="margin:8px 0 0">Rien d'ouvert. Ajoute une tâche dans l'onglet Tâches.</p>`}</div>
+    </section>
+  </div>
+  ${S.courses.length?"":`<section class="card empty"><h3>Ton studiolo est vide</h3><p>Envoie tes cours à Claude dans la conversation : ils apparaîtront ici avec leur matière, leurs chapitres et leurs dates d'examen.</p><div class="row" style="justify-content:center;margin-top:10px"><button class="btn" data-act="addCourse">Ajouter un cours à la main</button></div></section>`}`;
+  $("#editGoal").onclick=editGoal;
+  bindCommon();
+}
+function editGoal(){
+  const d=$("#dlg");d.innerHTML=`<form class="form" method="dialog" id="gf"><h2 style="font-size:28px">Objectif quotidien</h2><label>Minutes d'étude par jour<input type="number" id="goalIn" min="15" max="720" step="15" value="${S.settings.goal||180}"></label><div class="row" style="justify-content:flex-end"><button class="btn ghost" value="cancel">Annuler</button><button class="btn primary" value="ok">Enregistrer</button></div></form>`;
+  d.showModal();$("#gf").onsubmit=e=>{if(e.submitter&&e.submitter.value==="ok"){const v=Math.max(15,Math.min(720,parseInt($("#goalIn").value)||180));Store.setSettings({...S.settings,goal:v});toast("Objectif enregistré")}};
+}
+
+/* ---------- Tâches ---------- */
+function taskRow(t){
+  const c=courseById(t.course);const du=daysUntil(t.due);
+  const chip=t.done?"":du===null?"":du<0?`<span class="chip bad">${-du} j de retard</span>`:du===0?`<span class="chip warn">Aujourd'hui</span>`:du<=3?`<span class="chip warn">${fmtDate(t.due)}</span>`:`<span class="chip">${fmtDate(t.due)}</span>`;
+  return `<div class="item ${t.done?"done":""}"><input type="checkbox" class="check" data-task="${esc(t.id)}" ${t.done?"checked":""} aria-label="Terminer"><div class="grow"><div class="t">${esc(t.title)}</div>${c?`<div class="s">${esc(c.name)}</div>`:""}</div>${chip}</div>`;
+}
+function viewTasks(){
+  const open=S.tasks.filter(t=>!t.done).sort((x,y)=>(x.due||"9999").localeCompare(y.due||"9999"));
+  const done=S.tasks.filter(t=>t.done).slice(-8);
+  $("#view").innerHTML=`
+  <header class="row" style="justify-content:space-between"><div><div class="eyebrow">Tâches</div><h1 style="font-size:44px">Ce qui doit être fait</h1></div></header>
+  <section class="card">
+    <form id="tf" class="grid" style="grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) auto;align-items:end;gap:10px">
+      <label>Tâche<input type="text" id="tTitle" required placeholder="Ex. relire le chapitre 3"></label>
+      <label>Cours<select id="tCourse"><option value="">—</option>${S.courses.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("")}</select></label>
+      <label>Échéance<input type="date" id="tDue"></label>
+      <button class="btn primary" type="submit">Ajouter</button>
+    </form>
+  </section>
+  <section class="card"><div class="eyebrow">Ouvertes · ${open.length}</div><div class="list" style="margin-top:6px">${open.map(t=>taskRow(t)+"").join("")||`<p class="muted">Tout est fait.</p>`}</div></section>
+  ${done.length?`<section class="card"><div class="eyebrow">Terminées récemment</div><div class="list" style="margin-top:6px">${done.map(t=>taskRow(t).replace("</div></div>",`</div><button class="btn ghost" data-deltask="${esc(t.id)}" aria-label="Supprimer">Supprimer</button></div>`)).join("")}</div></section>`:""}`;
+  if(window.matchMedia("(max-width:860px)").matches)$("#tf").style.gridTemplateColumns="minmax(0,1fr)";
+  $("#tf").onsubmit=e=>{e.preventDefault();const title=$("#tTitle").value.trim();if(!title)return;Store.put("tasks",uid(),{title,course:$("#tCourse").value,due:$("#tDue").value,done:false,created:Date.now()});toast("Tâche ajoutée");$("#tTitle").value=""};
+  document.querySelectorAll("[data-deltask]").forEach(b=>b.onclick=()=>Store.del("tasks",b.dataset.deltask));
+  bindCommon();
+}
+function bindCommon(){
+  document.querySelectorAll("[data-task]").forEach(cb=>cb.onchange=()=>{const t=S.tasks.find(x=>x.id===cb.dataset.task);if(t)Store.put("tasks",t.id,{...strip(t),done:cb.checked});if(cb.checked)toast("Fait. Suivante.")});
+  document.querySelectorAll("[data-act=addCourse]").forEach(b=>b.onclick=()=>editCourse());
+}
+
+/* ---------- Séance (focus timer) ---------- */
+const Timer={total:25*60,left:25*60,running:false,end:0,course:"",intent:"",mounted:false,iv:null,
+  start(){if(this.running)return;this.running=true;this.end=Date.now()+this.left*1000;this.iv=setInterval(()=>this.tick(),250);this.paint()},
+  pause(){if(!this.running)return;this.running=false;clearInterval(this.iv);this.left=Math.max(0,Math.round((this.end-Date.now())/1000));this.paint()},
+  reset(sec){this.pause();this.total=this.left=sec;this.paint()},
+  tick(){this.left=Math.max(0,Math.round((this.end-Date.now())/1000));if(this.left===0){this.complete();}this.paint()},
+  async complete(){this.running=false;clearInterval(this.iv);const m=Math.round(this.total/60);await logMinutes(m,this.course);toast(`${m} minutes consignées`);chime();this.left=this.total;this.paint()},
+  paint(){const c=$("#clock");if(!c)return;const m=Math.floor(this.left/60),s=this.left%60;c.textContent=`${pad(m)}:${pad(s)}`;const p=$("#prog");if(p)p.style.width=((1-this.left/this.total)*100)+"%";const b=$("#go");if(b)b.textContent=this.running?"Pause":(this.left<this.total?"Reprendre":"Commencer");document.title=this.running?`${pad(m)}:${pad(s)} · Studiolo`:"Studiolo HEC"}
+};
+async function logMinutes(m,course){
+  const k=dayKey();const cur=S.days.find(d=>d.id===k)||{minutes:0,byCourse:{}};
+  const by={...(cur.byCourse||{})};if(course)by[course]=(by[course]||0)+m;
+  await Store.put("days",k,{minutes:(cur.minutes||0)+m,byCourse:by});
+}
+function chime(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[523.25,659.25,783.99].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain();o.frequency.value=f;o.type="sine";g.gain.setValueAtTime(0,a.currentTime+i*.18);g.gain.linearRampToValueAtTime(.12,a.currentTime+i*.18+.02);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+i*.18+1.2);o.connect(g).connect(a.destination);o.start(a.currentTime+i*.18);o.stop(a.currentTime+i*.18+1.3)})}catch{}}
+function viewFocus(){
+  const [q,a]=todayMaxim();
+  const presets=[[25,"25 min"],[50,"50 min"],[90,"90 min"]];
+  $("#view").innerHTML=`
+  <section class="focus">
+    <span class="lbl">Séance de travail</span>
+    <div class="row" style="justify-content:center">${presets.map(([m,l])=>`<button class="btn ${Timer.total===m*60?"on":""}" data-preset="${m}">${l}</button>`).join("")}</div>
+    <div class="clock num" id="clock" aria-live="off">25:00</div>
+    <div class="bar-prog"><i id="prog"></i></div>
+    <div class="row" style="justify-content:center;width:100%">
+      <select id="fCourse" aria-label="Cours"><option value="">Choisir un cours</option>${S.courses.map(c=>`<option value="${esc(c.id)}" ${Timer.course===c.id?"selected":""}>${esc(c.name)}</option>`).join("")}</select>
+      <input type="text" id="fIntent" placeholder="Intention : que vas-tu terminer ?" value="${esc(Timer.intent)}">
+    </div>
+    <div class="row" style="justify-content:center"><button class="btn on" id="go">Commencer</button><button class="btn" id="stop">Réinitialiser</button><button class="btn" id="early">Terminer et consigner</button></div>
+    <p class="quote">« ${esc(q)} »<br><span style="font-size:13px;font-style:normal;opacity:.7">${esc(a)}</span></p>
+  </section>
+  <section class="card"><div class="eyebrow">Méthode</div><p class="muted" style="margin:8px 0 0">Une intention par séance, téléphone hors de portée. À la fin : cinq minutes de pause, puis une question de rappel sans regarder tes notes. Seules les séances terminées comptent dans ta série (25 minutes minimum par jour).</p></section>`;
+  Timer.mounted=true;Timer.paint();
+  document.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{Timer.reset(+b.dataset.preset*60);document.querySelectorAll("[data-preset]").forEach(x=>x.classList.toggle("on",x===b))});
+  $("#go").onclick=()=>Timer.running?Timer.pause():Timer.start();
+  $("#stop").onclick=()=>Timer.reset(Timer.total);
+  $("#early").onclick=async()=>{const done=Math.round((Timer.total-(Timer.running?Math.max(0,(Timer.end-Date.now())/1000):Timer.left))/60);Timer.reset(Timer.total);if(done>=1){await logMinutes(done,Timer.course);toast(`${done} minutes consignées`)}else toast("Moins d'une minute : rien consigné")};
+  $("#fCourse").onchange=e=>Timer.course=e.target.value;
+  $("#fIntent").oninput=e=>Timer.intent=e.target.value;
+}
+
+/* ---------- Cours ---------- */
+function viewCourses(){
+  if(courseOpen){const c=courseById(courseOpen);if(c)return viewCourse(c);if(S.ready){location.hash="cours";return}}
+  const totalEcts=S.courses.reduce((s,c)=>s+(+c.ects||0),0);
+  $("#view").innerHTML=`
+  <header class="row" style="justify-content:space-between;align-items:flex-end"><div><div class="eyebrow">Cours · ${S.courses.length} · ${totalEcts} ECTS</div><h1 style="font-size:44px">La bibliothèque</h1></div><button class="btn primary" data-act="addCourse">Ajouter un cours</button></header>
+  ${S.courses.length?`<div class="grid g3">${[...S.courses].sort((a,b)=>(a.quadri||"").localeCompare(b.quadri||"")||a.name.localeCompare(b.name)).map(c=>{const p=courseProgress(c),du=daysUntil(c.examDate);return `<button class="card course-card" data-open="${esc(c.id)}"><div class="row" style="justify-content:space-between;width:100%"><span class="eyebrow">${esc(c.code||"")}${c.quadri?" · "+esc(c.quadri):""}</span>${c.ects?`<span class="chip">${esc(c.ects)} ECTS</span>`:""}</div><h3>${esc(c.name)}</h3><div class="muted" style="font-size:13px">${esc(c.prof||"")}</div><div class="prog" style="width:100%"><i style="width:${p}%"></i></div><div class="row" style="justify-content:space-between;width:100%;font-size:13px"><span class="muted num">${p}% préparé</span>${du!==null&&du>=0?`<span class="chip gold">J−${du}</span>`:""}</div></button>`}).join("")}</div>`
+  :`<section class="card empty"><h3>Aucun cours pour l'instant</h3><p>Envoie tes cours (intitulés, syllabus, notes, PDF) à Claude dans la conversation. Ils seront rangés ici avec leurs chapitres.</p></section>`}`;
+  document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>location.hash="cours-"+b.dataset.open);
+  bindCommon();
+}
+function viewCourse(c){
+  const p=courseProgress(c),du=daysUntil(c.examDate);const ch=c.chapters||[];
+  const mins=S.days.reduce((s,d)=>s+((d.byCourse||{})[c.id]||0),0);
+  $("#view").innerHTML=`
+  <div id="courseRoot" data-id="${esc(c.id)}" style="display:flex;flex-direction:column;gap:24px">
+  <header style="display:flex;flex-direction:column;gap:10px">
+    <a href="#cours" class="btn ghost" style="align-self:flex-start;padding-left:0">← Bibliothèque</a>
+    <div class="eyebrow">${esc(c.code||"Cours")}${c.quadri?" · "+esc(c.quadri):""}${c.prof?" · "+esc(c.prof):""}</div>
+    <h1 style="font-size:clamp(34px,5vw,52px);line-height:1.02">${esc(c.name)}</h1>
+    <div class="row">${c.ects?`<span class="chip">${esc(c.ects)} ECTS</span>`:""}${du!==null?`<span class="chip gold">${du>=0?`Examen dans ${du} j · ${fmtDate(c.examDate)}`:"Examen passé"}</span>`:""}<span class="chip">${p}% préparé</span><span class="chip">${Math.floor(mins/60)} h ${pad(mins%60)} étudiées</span><button class="btn ghost" id="editC">Modifier</button></div>
+  </header>
+  <div class="tabs" role="tablist">${[["matiere","Matière"],["chapitres","Chapitres"],["tuteur","Tuteur"],["quiz","Quiz"]].map(([k,l])=>`<button role="tab" aria-selected="${courseTab===k}" data-tab="${k}">${l}</button>`).join("")}</div>
+  <div id="tabBody"></div></div>`;
+  const body=$("#tabBody");
+  if(courseTab==="matiere"){
+    body.innerHTML=c.content?`<section class="card"><div class="prose">${md(c.content)}</div></section>`:`<section class="card empty"><h3>Pas encore de matière</h3><p>Envoie à Claude le syllabus ou tes notes de ce cours, ou colle-les via « Modifier ».</p></section>`;
+  }else if(courseTab==="chapitres"){
+    body.innerHTML=`<section class="card"><div class="list">${ch.map((x,i)=>`<div class="item ${x.done?"done":""}"><input type="checkbox" class="check" data-ch="${i}" ${x.done?"checked":""} aria-label="Chapitre maîtrisé"><div class="grow"><div class="t">${esc(x.t)}</div></div><button class="btn ghost" data-chdel="${i}" aria-label="Retirer">Retirer</button></div>`).join("")||`<p class="muted">Aucun chapitre.</p>`}</div>
+    <form id="chf" class="row" style="margin-top:14px;flex-wrap:nowrap"><input type="text" id="chIn" placeholder="Nouveau chapitre" aria-label="Nouveau chapitre"><button class="btn" type="submit">Ajouter</button></form></section>`;
+    const save=chs=>Store.put("courses",c.id,{...strip(c),chapters:chs});
+    body.querySelectorAll("[data-ch]").forEach(cb=>cb.onchange=()=>{const chs=ch.map((x,i)=>i==cb.dataset.ch?{...x,done:cb.checked}:x);save(chs);if(cb.checked)toast("Chapitre maîtrisé")});
+    body.querySelectorAll("[data-chdel]").forEach(b=>b.onclick=()=>save(ch.filter((_,i)=>i!=b.dataset.chdel)));
+    $("#chf").onsubmit=e=>{e.preventDefault();const t=$("#chIn").value.trim();if(t)save([...ch,{t,done:false}])};
+  }else if(courseTab==="tuteur"){
+    body.innerHTML=`<section class="card" style="display:flex;flex-direction:column;gap:14px">
+      <div class="row">${[["explain","Explique-moi un concept"],["sheet","Fiche de synthèse"],["plan","Plan de révision"],["exam","Questions d'examen probables"]].map(([k,l])=>`<button class="btn" data-ai="${k}">${l}</button>`).join("")}</div>
+      <form id="askf" class="row" style="flex-wrap:nowrap"><input type="text" id="askIn" placeholder="Pose une question sur ce cours…" aria-label="Question"><button class="btn primary" type="submit">Demander</button></form>
+      <div id="aiOut" class="prose muted">Le tuteur s'appuie sur la matière encodée pour ce cours${c.content?"":" (vide pour l'instant : réponses générales)"}.</div></section>`;
+    body.querySelectorAll("[data-ai]").forEach(b=>b.onclick=()=>tutor(c,b.dataset.ai));
+    $("#askf").onsubmit=e=>{e.preventDefault();const q=$("#askIn").value.trim();if(q)tutor(c,"ask",q)};
+  }else if(courseTab==="quiz"){
+    body.innerHTML=`<section class="card" style="display:flex;flex-direction:column;gap:14px"><div class="row"><button class="btn lapis" id="qGo">Générer un quiz de 5 questions</button><select id="qCh" style="max-width:320px" aria-label="Chapitre"><option value="">Tout le cours</option>${ch.map(x=>`<option>${esc(x.t)}</option>`).join("")}</select></div><div id="quizOut" class="muted">Rappel actif : la manière la plus efficace de mémoriser. Réponds avant de lire l'explication.</div></section>`;
+    $("#qGo").onclick=()=>quiz(c,$("#qCh").value);
+  }
+  body.parentElement.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{courseTab=b.dataset.tab;viewCourse(c)});
+  $("#editC").onclick=()=>editCourse(c);
+}
+function editCourse(c){
+  const v=c||{name:"",code:"",ects:"",quadri:"Q1",prof:"",examDate:"",content:"",chapters:[]};
+  const d=$("#dlg");d.innerHTML=`<form class="form" method="dialog" id="cf"><h2 style="font-size:28px">${c?"Modifier le cours":"Nouveau cours"}</h2>
+  <label>Intitulé<input type="text" id="cName" required value="${esc(v.name)}"></label>
+  <div class="grid g2"><label>Code<input type="text" id="cCode" value="${esc(v.code)}" placeholder="Ex. GEST0001"></label><label>Crédits ECTS<input type="number" id="cEcts" min="0" max="30" value="${esc(v.ects)}"></label></div>
+  <div class="grid g2"><label>Quadrimestre<select id="cQ">${["Q1","Q2","Annuel"].map(q=>`<option ${v.quadri===q?"selected":""}>${q}</option>`).join("")}</select></label><label>Date d'examen<input type="date" id="cExam" value="${esc(v.examDate)}"></label></div>
+  <label>Titulaire<input type="text" id="cProf" value="${esc(v.prof)}"></label>
+  <label>Matière (notes, syllabus, Markdown accepté)<textarea id="cContent">${esc(v.content)}</textarea></label>
+  <div class="row" style="justify-content:space-between">${c?`<button class="btn ghost" value="delete" style="color:var(--bad)">Supprimer</button>`:"<span></span>"}<div class="row"><button class="btn ghost" value="cancel">Annuler</button><button class="btn primary" value="ok">Enregistrer</button></div></div></form>`;
+  d.showModal();
+  $("#cf").onsubmit=e=>{
+    const act=e.submitter&&e.submitter.value;
+    if(act==="delete"){e.preventDefault();e.submitter.textContent="Confirmer la suppression";e.submitter.value="delete2";return}
+    if(act==="delete2"){Store.del("courses",c.id);location.hash="cours";toast("Cours supprimé");return}
+    if(act!=="ok")return;
+    const name=$("#cName").value.trim();if(!name){e.preventDefault();return}
+    const id=c?c.id:uid();
+    Store.put("courses",id,{...(c?strip(c):{chapters:[]}),name,code:$("#cCode").value.trim(),ects:$("#cEcts").value,quadri:$("#cQ").value,examDate:$("#cExam").value,prof:$("#cProf").value.trim(),content:$("#cContent").value});
+    toast("Cours enregistré");if(!c)location.hash="cours-"+id;
+  };
+}
+
+/* ---------- Tuteur & quiz (Claude) ---------- */
+function ctx(c){return `Cours : ${c.name}${c.code?" ("+c.code+")":""}, HEC Liège – École de gestion de l'Université de Liège.${c.ects?" "+c.ects+" ECTS.":""}\nChapitres : ${(c.chapters||[]).map(x=>x.t).join(" ; ")||"non précisés"}.\nMatière fournie par l'étudiant :\n"""\n${(c.content||"(aucune)").slice(0,60000)}\n"""`}
+const TUTOR_STYLE="Tu es un tuteur exigeant et bienveillant pour un étudiant de HEC Liège qui aime l'art, la philosophie et la lecture. Réponds en français, clair et structuré, en Markdown simple (titres ##, listes, **gras**). Appuie-toi d'abord sur la matière fournie ; signale quand tu sors de celle-ci. Une analogie tirée de l'art, de la philosophie ou de la littérature est bienvenue si elle éclaire vraiment. Termine par une question de rappel pour vérifier la compréhension.";
+let aiCtl=null;
+async function tutor(c,kind,q){
+  const out=$("#aiOut");const sample=await cap("sample");
+  if(!sample){out.textContent="Le tuteur n'est pas disponible dans cette vue. Ouvre l'app depuis claude.ai.";return}
+  const asks={explain:"Identifie les 3 concepts les plus difficiles de ce cours et explique le premier en profondeur, avec un exemple chiffré si pertinent.",sheet:"Rédige une fiche de synthèse d'une page : définitions clés, formules, mécanismes, pièges classiques.",plan:`Construis un plan de révision jour par jour jusqu'à l'examen${c.examDate?" du "+c.examDate+" (aujourd'hui : "+dayKey()+")":""}, avec des blocs de 50 minutes et des séances de rappel espacées.`,exam:"Liste 8 questions d'examen probables, de la plus simple à la plus exigeante, avec pour chacune les éléments de réponse attendus.",ask:q};
+  if(aiCtl)aiCtl.abort();aiCtl=new AbortController();
+  out.classList.remove("muted");out.innerHTML=`<p class="muted">Réflexion…</p>`;
+  try{await sample(`${TUTOR_STYLE}\n\n${ctx(c)}\n\nDemande : ${asks[kind]}`,{signal:aiCtl.signal,cache:false,onText:({text})=>{out.innerHTML=md(text)}})}
+  catch(e){if(e&&e.code==="cancelled")return;out.innerHTML=(e&&e.text?md(e.text):"")+`<p class="muted">${e&&e.code==="not_granted"?"Accès à Claude refusé pour cette page.":e&&e.code==="rate_limited"?"Trop de demandes. Réessaie dans un instant.":"La réponse n'a pas pu aboutir."}</p>`}
+}
+async function quiz(c,chap){
+  const out=$("#quizOut");const sample=await cap("sample");
+  if(!sample){out.textContent="Le quiz n'est pas disponible dans cette vue.";return}
+  out.classList.remove("muted");out.innerHTML=`<p class="muted">Préparation des questions…</p>`;$("#qGo").disabled=true;
+  try{
+    const r=await sample.json(`${ctx(c)}\n\nCrée 5 questions à choix multiples de niveau examen universitaire${chap?" sur le chapitre « "+chap+" »":""}, en français. Varie : définition, application chiffrée, piège conceptuel. Réponds UNIQUEMENT avec ce JSON : {"questions":[{"q":"énoncé","choices":["A","B","C","D"],"answer":0,"why":"explication courte"}]}`,{cache:false});
+    const qs=(r&&r.questions)||[];let score=0,answered=0;
+    out.innerHTML=qs.map((x,i)=>`<div class="q" data-q="${i}"><div style="font-weight:500">${i+1}. ${esc(x.q)}</div><div class="opts">${(x.choices||[]).map((o,j)=>`<button data-j="${j}">${esc(o)}</button>`).join("")}</div><div class="why" hidden>${esc(x.why)}</div></div>`).join("")+`<p id="score" class="muted"></p>`;
+    out.querySelectorAll(".q").forEach(el=>{const x=qs[+el.dataset.q];el.querySelectorAll("button").forEach(b=>b.onclick=()=>{if(el.dataset.done)return;el.dataset.done=1;answered++;const ok=+b.dataset.j===+x.answer;if(ok)score++;b.classList.add(ok?"right":"wrong");el.querySelector(`[data-j="${x.answer}"]`).classList.add("right");el.querySelector(".why").hidden=false;if(answered===qs.length){$("#score").textContent=`Score : ${score}/${qs.length}. ${score>=4?"Solide.":score>=3?"Presque. Revois les erreurs.":"Retour à la matière, puis recommence."}`}})});
+  }catch(e){out.innerHTML=`<p class="muted">${e&&e.code==="not_granted"?"Accès à Claude refusé pour cette page.":"Le quiz n'a pas pu être généré. Réessaie."}</p>`}
+  finally{const g=$("#qGo");if(g)g.disabled=false}
+}
+
+/* ---------- Courrier (Outlook via Microsoft 365) ---------- */
+let lastMail=null;
+function viewMail(){
+  $("#view").innerHTML=`<div id="mailRoot" style="display:flex;flex-direction:column;gap:24px">
+  <header><div class="eyebrow">Courrier · ULiège</div><h1 style="font-size:44px">La correspondance</h1></header>
+  <section class="card" style="display:flex;flex-direction:column;gap:14px">
+    <form id="mf" class="row" style="flex-wrap:nowrap"><input type="search" id="mq" placeholder="Rechercher dans ta boîte ULiège…" aria-label="Recherche"><button class="btn primary" type="submit">Chercher</button></form>
+    <div class="row">${["examen","horaire","travail de groupe","eCampus","secrétariat"].map(k=>`<button class="btn" data-mq="${k}">${k}</button>`).join("")}<a class="btn ghost" href="https://outlook.office.com/mail/" target="_blank" rel="noopener">Ouvrir Outlook ↗</a></div>
+    <div id="mailOut" class="muted">La recherche passe par le connecteur Microsoft 365 de ton compte Claude, avec ta propre connexion ULiège.</div>
+  </section>
+  <section class="card" id="mailAi" hidden></section></div>`;
+  $("#mf").onsubmit=e=>{e.preventDefault();mailSearch($("#mq").value.trim())};
+  document.querySelectorAll("[data-mq]").forEach(b=>b.onclick=()=>{$("#mq").value=b.dataset.mq;mailSearch(b.dataset.mq)});
+  if(lastMail)renderMail(lastMail);
+}
+function buildInput(schema,query){
+  const props=(schema&&schema.properties)||{};const req=(schema&&schema.required)||[];const input={};
+  const keys=Object.keys(props);
+  const qKey=keys.find(k=>/^(query|q|search|searchquery|search_query|keywords?|text|querystring)$/i.test(k)&&(props[k].type==="string"||!props[k].type))
+    ||req.find(k=>props[k]&&props[k].type==="string")||keys.find(k=>props[k].type==="string");
+  if(qKey)input[qKey]=query;
+  const lKey=keys.find(k=>/^(limit|top|count|max_?results|maxresults|size|page_?size)$/i.test(k)&&(props[k].type==="integer"||props[k].type==="number"));
+  if(lKey){const mx=props[lKey].maximum;input[lKey]=mx?Math.min(15,mx):15}
+  return {input,ok:!!qKey,missing:req.filter(k=>!(k in input))};
+}
+function mailMsg(e){
+  const s=MAIL_SERVER;
+  switch(e&&e.code){
+    case "server_not_connected":return `Ajoute le connecteur « ${s} » dans claude.ai → Paramètres → Connecteurs, puis connecte-toi avec ton compte ULiège.`;
+    case "needs_reauth":return `Reconnecte « ${s} » dans claude.ai → Paramètres → Connecteurs.`;
+    case "selection_required":return `Plusieurs connecteurs « ${s} » : choisis celui de ton compte ULiège dans l'invite de claude.ai.`;
+    case "not_in_manifest":case "approval_required":return `Accès au courrier non autorisé pour cette page. Autorise « ${s} » dans le menu Permissions de l'artifact.`;
+    case "blocked_by_policy":return "La politique de ton organisation bloque cet outil.";
+    case "server_unavailable":return "Outlook ne répond pas pour l'instant. Réessaie dans un moment.";
+    case "tool_error":return "Outlook a refusé la recherche : "+(e.message||"erreur inconnue");
+    default:return "Le courrier n'est pas accessible ("+((e&&e.code)||"inconnu")+").";
+  }
+}
+async function mailSearch(query){
+  const out=$("#mailOut");if(!query){out.textContent="Tape un mot-clé.";return}
+  const mcp=await cap("mcp");
+  if(!mcp){out.textContent="Le courrier n'est disponible que dans claude.ai, une fois le connecteur Microsoft 365 ajouté.";return}
+  out.classList.remove("muted");out.innerHTML=`<p class="muted">Recherche…</p>`;
+  try{
+    const perms=await cap("permissions");
+    if(perms){const st=await perms.request(["mcp:"+MAIL_SERVER]).catch(()=>null);const v=st&&st["mcp:"+MAIL_SERVER];if(v==="denied"){out.textContent=mailMsg({code:"not_in_manifest"});return}}
+    let schema=null;try{schema=(await mcp.describeTool(MAIL_SERVER,"outlook_email_search")).inputSchema}catch(e){if(e&&(e.code==="server_not_connected"||e.code==="needs_reauth")){out.textContent=mailMsg(e);return}}
+    if(!schema){out.textContent="Impossible de lire le format de recherche du connecteur. Vérifie que « Microsoft 365 » est connecté et autorisé pour cette page.";return}
+    const b=buildInput(schema,query);
+    if(!b.ok||b.missing.length){out.textContent="Format de recherche inattendu"+(b.missing.length?" (champs requis : "+b.missing.join(", ")+")":"")+". Signale-le à Claude.";return}
+    const r=await mcp.callTool(MAIL_SERVER,"outlook_email_search",b.input,{cache:{staleTime:60000,gcTime:600000}});
+    lastMail={query,payload:r.payload!==undefined?r.payload:r.content};renderMail(lastMail);
+  }catch(e){out.textContent=mailMsg(e)}
+}
+function findArray(p){if(Array.isArray(p))return p;if(p&&typeof p==="object"){for(const k of ["value","messages","emails","results","items","data","hits"])if(Array.isArray(p[k]))return p[k];for(const v of Object.values(p))if(Array.isArray(v)&&v.length&&typeof v[0]==="object")return v}return null}
+const pick=(o,...ks)=>{for(const k of ks){const v=k.split(".").reduce((a,x)=>a&&a[x],o);if(v)return v}return ""};
+function renderMail({query,payload}){
+  const out=$("#mailOut");if(!out)return;const arr=findArray(payload);
+  if(arr&&arr.length&&typeof arr[0]==="object"){
+    out.innerHTML=`<div class="row" style="justify-content:space-between"><span class="eyebrow">${arr.length} résultat${arr.length>1?"s":""} · « ${esc(query)} »</span><button class="btn lapis" id="mailSum">Résumer et extraire les échéances</button></div><div style="margin-top:6px">${arr.slice(0,25).map(m=>{const from=pick(m,"from.emailAddress.name","from.name","sender.emailAddress.name","sender.name","from","sender");const date=pick(m,"receivedDateTime","sentDateTime","date","received","timestamp");const subj=pick(m,"subject","title","name")||"(sans objet)";const prev=pick(m,"bodyPreview","preview","snippet","summary","body.content");const link=pick(m,"webLink","url","link");return `<div class="mail-item"><div class="subj">${link&&/^https:\/\//.test(link)?`<a href="${esc(link)}" target="_blank" rel="noopener" style="color:inherit">${esc(subj)}</a>`:esc(subj)}</div><div class="meta">${esc(typeof from==="string"?from:JSON.stringify(from))}${date?" · "+esc(new Date(date).toString()!=="Invalid Date"?new Date(date).toLocaleString("fr-BE",{dateStyle:"medium",timeStyle:"short"}):date):""}</div>${prev?`<div class="prev">${esc(String(prev).replace(/<[^>]+>/g," ").slice(0,220))}</div>`:""}</div>`}).join("")}</div>`;
+  }else if(arr&&!arr.length){out.innerHTML=`<p class="muted">Aucun message pour « ${esc(query)} ».</p>`;return}
+  else{out.innerHTML=`<div class="row" style="justify-content:space-between"><span class="eyebrow">Résultat · « ${esc(query)} »</span><button class="btn lapis" id="mailSum">Résumer et extraire les échéances</button></div><pre class="raw">${esc(typeof payload==="string"?payload:JSON.stringify(payload,null,2))}</pre>`}
+  const sb=$("#mailSum");if(sb)sb.onclick=()=>mailSummarize(payload);
+}
+async function mailSummarize(payload){
+  const box=$("#mailAi");box.hidden=false;box.innerHTML=`<p class="muted">Lecture des messages…</p>`;
+  const sample=await cap("sample");if(!sample){box.textContent="Résumé indisponible dans cette vue.";return}
+  try{
+    const r=await sample.json(`Tu aides un étudiant de HEC Liège. Voici des résultats de recherche dans sa boîte mail universitaire (JSON). Aujourd'hui : ${dayKey()}. Cours connus : ${S.courses.map(c=>c.name).join(" ; ")||"aucun"}.\n${JSON.stringify(payload).slice(0,40000)}\n\nRéponds UNIQUEMENT avec ce JSON : {"summary":"résumé en 3 à 6 puces Markdown, en français","deadlines":[{"title":"action à faire, courte","due":"AAAA-MM-JJ ou vide","course":"nom exact d'un cours connu ou vide"}]}`,{cache:false});
+    const dl=(r&&r.deadlines)||[];
+    box.innerHTML=`<div class="eyebrow">Synthèse</div><div class="prose" style="margin-top:6px">${md(r.summary||"")}</div>${dl.length?`<div class="eyebrow" style="margin-top:16px">Échéances repérées</div><div class="list">${dl.map((d,i)=>`<div class="item"><div class="grow"><div class="t">${esc(d.title)}</div><div class="s">${esc(d.course||"")}${d.due?" · "+fmtDate(d.due):""}</div></div><button class="btn" data-add="${i}">Ajouter aux tâches</button></div>`).join("")}</div>`:""}`;
+    box.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{const d=dl[+b.dataset.add];const c=S.courses.find(x=>x.name===d.course);Store.put("tasks",uid(),{title:d.title,course:c?c.id:"",due:/^\d{4}-\d{2}-\d{2}$/.test(d.due||"")?d.due:"",done:false,created:Date.now()});b.disabled=true;b.textContent="Ajoutée"});
+  }catch(e){box.innerHTML=`<p class="muted">${e&&e.code==="not_granted"?"Accès à Claude refusé pour cette page.":"La synthèse n'a pas pu aboutir."}</p>`}
+}
+
+/* ---------- boot ---------- */
+route();
+Store.init();
+</script>
