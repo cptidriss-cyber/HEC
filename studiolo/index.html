@@ -132,6 +132,18 @@ label{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--mute
 .prose ul,.prose ol{padding-left:22px;margin:8px 0}
 .prose code{background:var(--bg);padding:1px 5px;border-radius:5px;font-size:.92em}
 .prose strong{font-weight:600}
+.prose h4{font-family:var(--body);font-size:15px;font-weight:600;margin:14px 0 4px}
+.prose .tbl{overflow-x:auto;margin:10px 0}
+.prose table{border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.prose th,.prose td{border-bottom:1px solid var(--line);padding:5px 10px;text-align:left;vertical-align:top}
+.prose th{font-weight:600;color:var(--muted)}
+.chap-nav{display:flex;flex-direction:column;gap:2px}
+.chap-nav button{display:flex;gap:10px;align-items:baseline;text-align:left;border:0;background:none;padding:7px 0;cursor:pointer;color:var(--ink);border-top:1px solid var(--line)}
+.chap-nav button:first-child{border-top:0}
+.chap-nav button:hover .ct{text-decoration:underline;text-underline-offset:3px}
+.chap-nav .cn{font-family:var(--display);font-size:20px;color:var(--muted);min-width:28px}
+.chap-nav .done .ct{color:var(--muted)}
+.chap-pager{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
 .q{padding:16px 0;border-top:1px solid var(--line)}
 .q:first-child{border-top:0}
 .q .opts{display:flex;flex-direction:column;gap:6px;margin-top:10px}
@@ -333,15 +345,19 @@ function md(src){
   const lines=esc(src).split("\n");let out="",list=null;
   const inline=s=>s.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>").replace(/(^|[^*])\*(?!\s)(.+?)\*/g,"$1<em>$2</em>").replace(/`(.+?)`/g,"<code>$1</code>");
   const close=()=>{if(list){out+=`</${list}>`;list=null}};
+  let tbl=null;
+  const flush=()=>{if(tbl){const [h,...b]=tbl;out+=`<div class="tbl"><table><thead><tr>${h.map(x=>`<th>${inline(x)}</th>`).join("")}</tr></thead><tbody>${b.map(r=>`<tr>${r.map(x=>`<td>${inline(x)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;tbl=null}};
   for(const l of lines){
     let m;
-    if(m=l.match(/^(#{1,3})\s+(.*)/)){close();out+=`<h${m[1].length+1}>${inline(m[2])}</h${m[1].length+1}>`}
+    if(/^\s*\|.*\|\s*$/.test(l)){close();if(/^\s*\|[\s:|-]+\|\s*$/.test(l))continue;(tbl=tbl||[]).push(l.trim().slice(1,-1).split("|").map(x=>x.trim()));continue}
+    flush();
+    if(m=l.match(/^(#{1,4})\s+(.*)/)){close();const n=Math.min(4,m[1].length+1);out+=`<h${n}>${inline(m[2])}</h${n}>`}
     else if(m=l.match(/^\s*[-*•]\s+(.*)/)){if(list!=="ul"){close();out+="<ul>";list="ul"}out+=`<li>${inline(m[1])}</li>`}
     else if(m=l.match(/^\s*\d+[.)]\s+(.*)/)){if(list!=="ol"){close();out+="<ol>";list="ol"}out+=`<li>${inline(m[1])}</li>`}
     else if(!l.trim()){close()}
     else{close();out+=`<p>${inline(l)}</p>`}
   }
-  close();return out;
+  close();flush();return out;
 }
 const cap=name=>(window.claude&&window.claude.use)?window.claude.use(name).catch(()=>null):Promise.resolve(null);
 
@@ -393,8 +409,8 @@ function nextExam(){return S.courses.filter(c=>c.examDate&&daysUntil(c.examDate)
 
 /* ---------- router ---------- */
 const VIEWS={aujourdhui:viewToday,focus:viewFocus,cours:viewCourses,taches:viewTasks,courrier:viewMail,horaire:viewSchedule};
-let current="aujourdhui",courseOpen=null,courseTab="matiere";
-function route(){const h=location.hash.slice(1);current=VIEWS[h]?h:(h.startsWith("cours-")?"cours":"aujourdhui");courseOpen=h.startsWith("cours-")?h.slice(6):null;render();window.scrollTo(0,0)}
+let current="aujourdhui",courseOpen=null,courseTab="matiere",chapOpen=null;
+function route(){const h=location.hash.slice(1);if(h!=="cours-"+courseOpen)chapOpen=null;current=VIEWS[h]?h:(h.startsWith("cours-")?"cours":"aujourdhui");courseOpen=h.startsWith("cours-")?h.slice(6):null;render();window.scrollTo(0,0)}
 function render(){
   document.querySelectorAll(".nav a").forEach(a=>{if(a.dataset.view===current)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   if(current==="focus"&&Timer.mounted&&$("#clock")){Timer.paint();return}
@@ -604,7 +620,19 @@ function viewCourse(c){
   <div id="tabBody"></div></div>`;
   const body=$("#tabBody");
   if(courseTab==="matiere"){
-    body.innerHTML=c.content?`<section class="card"><div class="prose">${md(c.content)}</div></section>`:`<section class="card empty"><h3>Matière à venir</h3><p>Rien n'est écrit tant que tes fichiers de cours (slides, syllabus, notes) n'ont pas été envoyés à Claude. Aucune matière n'est inventée.</p></section>`;
+    const withC=ch.map((x,i)=>({...x,i})).filter(x=>x.content);
+    if(chapOpen!==null&&!(ch[chapOpen]&&ch[chapOpen].content))chapOpen=null;
+    if(chapOpen!==null){
+      const x=ch[chapOpen],k=withC.findIndex(y=>y.i===chapOpen),prev=withC[k-1],next=withC[k+1];
+      body.innerHTML=`<section class="card"><div class="row" style="justify-content:space-between"><button class="btn ghost" id="chBack" style="padding-left:0">← Chapitres</button><label class="row" style="flex-direction:row;gap:8px;color:var(--ink)"><input type="checkbox" class="check" id="chDone" ${x.done?"checked":""}>Maîtrisé</label></div><div class="prose">${md(x.content)}</div>
+      <div class="chap-pager">${prev?`<button class="btn" data-go="${prev.i}">← ${esc(prev.t)}</button>`:"<span></span>"}${next?`<button class="btn" data-go="${next.i}">${esc(next.t)} →</button>`:""}</div></section>`;
+      $("#chBack").onclick=()=>{chapOpen=null;viewCourse(c)};
+      body.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{chapOpen=+b.dataset.go;viewCourse(c);$("#courseRoot").scrollIntoView()});
+      $("#chDone").onchange=e=>{Store.put("courses",c.id,{...strip(c),chapters:ch.map((y,i)=>i===chapOpen?{...y,done:e.target.checked}:y)});if(e.target.checked)toast("Chapitre maîtrisé")};
+    }else if(withC.length||c.content){
+      body.innerHTML=`${c.content?`<section class="card"><div class="prose">${md(c.content)}</div></section>`:""}${withC.length?`<section class="card"><div class="eyebrow">${withC.length} chapitre${withC.length>1?"s":""} rédigé${withC.length>1?"s":""}${c.source?" · "+esc(c.source):""}</div><div class="chap-nav" style="margin-top:6px">${withC.map(x=>`<button data-chap="${x.i}" class="${x.done?"done":""}"><span class="cn num">${esc(x.n||x.i+1)}</span><span class="ct">${esc(x.t)}</span>${x.done?`<span class="chip">maîtrisé</span>`:""}</button>`).join("")}</div></section>`:""}`;
+      body.querySelectorAll("[data-chap]").forEach(b=>b.onclick=()=>{chapOpen=+b.dataset.chap;viewCourse(c);$("#courseRoot").scrollIntoView()});
+    }else body.innerHTML=`<section class="card empty"><h3>Matière à venir</h3><p>Rien n'est écrit tant que tes fichiers de cours (slides, syllabus, notes) n'ont pas été envoyés à Claude. Aucune matière n'est inventée.</p></section>`;
   }else if(courseTab==="chapitres"){
     body.innerHTML=`<section class="card"><div class="list">${ch.map((x,i)=>`<div class="item ${x.done?"done":""}"><input type="checkbox" class="check" data-ch="${i}" ${x.done?"checked":""} aria-label="Chapitre maîtrisé"><div class="grow"><div class="t">${esc(x.t)}</div></div><button class="btn ghost" data-chdel="${i}" aria-label="Retirer">Retirer</button></div>`).join("")||`<p class="muted">Aucun chapitre.</p>`}</div>
     <form id="chf" class="row" style="margin-top:14px;flex-wrap:nowrap"><input type="text" id="chIn" placeholder="Nouveau chapitre" aria-label="Nouveau chapitre"><button class="btn" type="submit">Ajouter</button></form></section>`;
@@ -615,13 +643,15 @@ function viewCourse(c){
   }else if(courseTab==="tuteur"){
     body.innerHTML=`<section class="card" style="display:flex;flex-direction:column;gap:14px">
       <div class="row">${[["explain","Explique-moi un concept"],["sheet","Fiche de synthèse"],["plan","Plan de révision"],["exam","Questions d'examen probables"]].map(([k,l])=>`<button class="btn" data-ai="${k}">${l}</button>`).join("")}</div>
+      ${hasMat(c)&&(c.chapters||[]).some(x=>x.content)?`<select id="tCh" aria-label="Chapitre" style="max-width:420px"><option value="">Tout le cours</option>${ch.map((x,i)=>x.content?`<option value="${i}" ${chapOpen===i?"selected":""}>${esc(x.t)}</option>`:"").join("")}</select>`:""}
       <form id="askf" class="row" style="flex-wrap:nowrap"><input type="text" id="askIn" placeholder="Pose une question sur ce cours…" aria-label="Question"><button class="btn primary" type="submit">Demander</button></form>
-      <div id="aiOut" class="prose muted">${c.content?"Le tuteur s'appuie uniquement sur la matière encodée pour ce cours.":"Indisponible : aucune matière encodée pour ce cours. Envoie d'abord tes fichiers à Claude."}</div></section>`;
-    body.querySelectorAll("[data-ai]").forEach(b=>b.onclick=()=>tutor(c,b.dataset.ai));
-    $("#askf").onsubmit=e=>{e.preventDefault();const q=$("#askIn").value.trim();if(q)tutor(c,"ask",q)};
+      <div id="aiOut" class="prose muted">${hasMat(c)?"Le tuteur s'appuie uniquement sur la matière encodée pour ce cours.":"Indisponible : aucune matière encodée pour ce cours. Envoie d'abord tes fichiers à Claude."}</div></section>`;
+    const tch=()=>{const v=$("#tCh");return v&&v.value!==""?+v.value:null};
+    body.querySelectorAll("[data-ai]").forEach(b=>b.onclick=()=>tutor(c,b.dataset.ai,"",tch()));
+    $("#askf").onsubmit=e=>{e.preventDefault();const q=$("#askIn").value.trim();if(q)tutor(c,"ask",q,tch())};
   }else if(courseTab==="quiz"){
-    body.innerHTML=`<section class="card" style="display:flex;flex-direction:column;gap:14px"><div class="row"><button class="btn lapis" id="qGo">Générer un quiz de 5 questions</button><select id="qCh" style="max-width:320px" aria-label="Chapitre"><option value="">Tout le cours</option>${ch.map(x=>`<option>${esc(x.t)}</option>`).join("")}</select></div><div id="quizOut" class="muted">Rappel actif : la manière la plus efficace de mémoriser. Réponds avant de lire l'explication.</div></section>`;
-    $("#qGo").onclick=()=>quiz(c,$("#qCh").value);
+    body.innerHTML=`<section class="card" style="display:flex;flex-direction:column;gap:14px"><div class="row"><button class="btn lapis" id="qGo">Générer un quiz de 5 questions</button><select id="qCh" style="max-width:320px" aria-label="Chapitre"><option value="">Tout le cours</option>${ch.map((x,i)=>`<option value="${i}" ${chapOpen===i?"selected":""}>${esc(x.t)}</option>`).join("")}</select></div><div id="quizOut" class="muted">Rappel actif : la manière la plus efficace de mémoriser. Réponds avant de lire l'explication.</div></section>`;
+    $("#qGo").onclick=()=>{const v=$("#qCh").value;quiz(c,v===""?null:+v)};
   }
   body.parentElement.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{courseTab=b.dataset.tab;viewCourse(c)});
   $("#editC").onclick=()=>editCourse(c);
@@ -649,26 +679,29 @@ function editCourse(c){
 }
 
 /* ---------- Tuteur & quiz (Claude) ---------- */
-function ctx(c){return `Cours : ${c.name}${c.code?" ("+c.code+")":""}, HEC Liège – École de gestion de l'Université de Liège.${c.ects?" "+c.ects+" ECTS.":""}\nChapitres : ${(c.chapters||[]).map(x=>x.t).join(" ; ")||"non précisés"}.\nMatière fournie par l'étudiant :\n"""\n${(c.content||"(aucune)").slice(0,60000)}\n"""`}
+const hasMat=c=>!!(c.content||(c.chapters||[]).some(x=>x.content));
+function ctx(c,ci){const ch=c.chapters||[];const one=ci!=null&&ch[ci];
+  const mat=one?(one.content||"(pas de matière pour ce chapitre)"):[c.content||"",...ch.filter(x=>x.content).map(x=>x.content)].filter(Boolean).join("\n\n");
+  return `Cours : ${c.name}${c.code?" ("+c.code+")":""}, HEC Liège – École de gestion de l'Université de Liège.${c.ects?" "+c.ects+" ECTS.":""}\nChapitres : ${ch.map(x=>x.t).join(" ; ")||"non précisés"}.${one?"\nChapitre étudié : "+one.t+".":""}\nMatière fournie par l'étudiant${one?" (ce chapitre)":""} :\n"""\n${(mat||"(aucune)").slice(0,90000)}\n"""`}
 const TUTOR_STYLE="Tu es un tuteur exigeant et bienveillant pour un étudiant de HEC Liège qui aime l'art, la philosophie et la lecture. Réponds en français, clair et structuré, en Markdown simple (titres ##, listes, **gras**). Appuie-toi UNIQUEMENT sur la matière fournie : n'ajoute aucune notion, définition, formule ou chiffre absent de celle-ci. Si la réponse n'y figure pas, dis-le clairement au lieu d'inventer. Une analogie tirée de l'art, de la philosophie ou de la littérature est bienvenue si elle éclaire vraiment. Termine par une question de rappel pour vérifier la compréhension.";
 let aiCtl=null;
-async function tutor(c,kind,q){
+async function tutor(c,kind,q,ci){
   const out=$("#aiOut");const sample=await cap("sample");
-  if(!c.content){out.textContent="Aucune matière encodée pour ce cours : rien à expliquer sans tes fichiers.";return}
+  if(!hasMat(c)){out.textContent="Aucune matière encodée pour ce cours : rien à expliquer sans tes fichiers.";return}
   if(!sample){out.textContent="Le tuteur n'est pas disponible dans cette vue. Ouvre l'app depuis claude.ai.";return}
   const asks={explain:"Identifie les 3 concepts les plus difficiles de ce cours et explique le premier en profondeur, avec un exemple chiffré si pertinent.",sheet:"Rédige une fiche de synthèse d'une page : définitions clés, formules, mécanismes, pièges classiques.",plan:`Construis un plan de révision jour par jour jusqu'à l'examen${c.examDate?" du "+c.examDate+" (aujourd'hui : "+dayKey()+")":""}, avec des blocs de 50 minutes et des séances de rappel espacées.`,exam:"Liste 8 questions d'examen probables, de la plus simple à la plus exigeante, avec pour chacune les éléments de réponse attendus.",ask:q};
   if(aiCtl)aiCtl.abort();aiCtl=new AbortController();
   out.classList.remove("muted");out.innerHTML=`<p class="muted">Réflexion…</p>`;
-  try{await sample(`${TUTOR_STYLE}\n\n${ctx(c)}\n\nDemande : ${asks[kind]}`,{signal:aiCtl.signal,cache:false,onText:({text})=>{out.innerHTML=md(text)}})}
+  try{await sample(`${TUTOR_STYLE}\n\n${ctx(c,ci)}\n\nDemande : ${asks[kind]}`,{signal:aiCtl.signal,cache:false,onText:({text})=>{out.innerHTML=md(text)}})}
   catch(e){if(e&&e.code==="cancelled")return;out.innerHTML=(e&&e.text?md(e.text):"")+`<p class="muted">${e&&e.code==="not_granted"?"Accès à Claude refusé pour cette page.":e&&e.code==="rate_limited"?"Trop de demandes. Réessaie dans un instant.":"La réponse n'a pas pu aboutir."}</p>`}
 }
 async function quiz(c,chap){
   const out=$("#quizOut");const sample=await cap("sample");
-  if(!c.content){out.textContent="Aucune matière encodée pour ce cours : pas de quiz sans tes fichiers.";return}
+  if(!hasMat(c)){out.textContent="Aucune matière encodée pour ce cours : pas de quiz sans tes fichiers.";return}
   if(!sample){out.textContent="Le quiz n'est pas disponible dans cette vue.";return}
   out.classList.remove("muted");out.innerHTML=`<p class="muted">Préparation des questions…</p>`;$("#qGo").disabled=true;
   try{
-    const r=await sample.json(`${ctx(c)}\n\nCrée 5 questions à choix multiples de niveau examen universitaire${chap?" sur le chapitre « "+chap+" »":""}, en français, basées EXCLUSIVEMENT sur la matière fournie (aucune notion extérieure). Varie : définition, application chiffrée, piège conceptuel. Réponds UNIQUEMENT avec ce JSON : {"questions":[{"q":"énoncé","choices":["A","B","C","D"],"answer":0,"why":"explication courte"}]}`,{cache:false});
+    const r=await sample.json(`${ctx(c,chap)}\n\nCrée 5 questions à choix multiples de niveau examen universitaire${chap!=null&&(c.chapters||[])[chap]?" sur le chapitre « "+c.chapters[chap].t+" »":""}, en français, basées EXCLUSIVEMENT sur la matière fournie (aucune notion extérieure). Varie : définition, application chiffrée, piège conceptuel. Réponds UNIQUEMENT avec ce JSON : {"questions":[{"q":"énoncé","choices":["A","B","C","D"],"answer":0,"why":"explication courte"}]}`,{cache:false});
     const qs=(r&&r.questions)||[];let score=0,answered=0;
     out.innerHTML=qs.map((x,i)=>`<div class="q" data-q="${i}"><div style="font-weight:500">${i+1}. ${esc(x.q)}</div><div class="opts">${(x.choices||[]).map((o,j)=>`<button data-j="${j}">${esc(o)}</button>`).join("")}</div><div class="why" hidden>${esc(x.why)}</div></div>`).join("")+`<p id="score" class="muted"></p>`;
     out.querySelectorAll(".q").forEach(el=>{const x=qs[+el.dataset.q];el.querySelectorAll("button").forEach(b=>b.onclick=()=>{if(el.dataset.done)return;el.dataset.done=1;answered++;const ok=+b.dataset.j===+x.answer;if(ok)score++;b.classList.add(ok?"right":"wrong");el.querySelector(`[data-j="${x.answer}"]`).classList.add("right");el.querySelector(".why").hidden=false;if(answered===qs.length){$("#score").textContent=`Score : ${score}/${qs.length}. ${score>=4?"Solide.":score>=3?"Presque. Revois les erreurs.":"Retour à la matière, puis recommence."}`}})});
