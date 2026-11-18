@@ -604,7 +604,7 @@ function viewCourse(c){
   <div id="tabBody"></div></div>`;
   const body=$("#tabBody");
   if(courseTab==="matiere"){
-    body.innerHTML=c.content?`<section class="card"><div class="prose">${md(c.content)}</div></section>`:`<section class="card empty"><h3>Pas encore de matière</h3><p>Envoie à Claude le syllabus ou tes notes de ce cours, ou colle-les via « Modifier ».</p></section>`;
+    body.innerHTML=c.content?`<section class="card"><div class="prose">${md(c.content)}</div></section>`:`<section class="card empty"><h3>Matière à venir</h3><p>Rien n'est écrit tant que tes fichiers de cours (slides, syllabus, notes) n'ont pas été envoyés à Claude. Aucune matière n'est inventée.</p></section>`;
   }else if(courseTab==="chapitres"){
     body.innerHTML=`<section class="card"><div class="list">${ch.map((x,i)=>`<div class="item ${x.done?"done":""}"><input type="checkbox" class="check" data-ch="${i}" ${x.done?"checked":""} aria-label="Chapitre maîtrisé"><div class="grow"><div class="t">${esc(x.t)}</div></div><button class="btn ghost" data-chdel="${i}" aria-label="Retirer">Retirer</button></div>`).join("")||`<p class="muted">Aucun chapitre.</p>`}</div>
     <form id="chf" class="row" style="margin-top:14px;flex-wrap:nowrap"><input type="text" id="chIn" placeholder="Nouveau chapitre" aria-label="Nouveau chapitre"><button class="btn" type="submit">Ajouter</button></form></section>`;
@@ -616,7 +616,7 @@ function viewCourse(c){
     body.innerHTML=`<section class="card" style="display:flex;flex-direction:column;gap:14px">
       <div class="row">${[["explain","Explique-moi un concept"],["sheet","Fiche de synthèse"],["plan","Plan de révision"],["exam","Questions d'examen probables"]].map(([k,l])=>`<button class="btn" data-ai="${k}">${l}</button>`).join("")}</div>
       <form id="askf" class="row" style="flex-wrap:nowrap"><input type="text" id="askIn" placeholder="Pose une question sur ce cours…" aria-label="Question"><button class="btn primary" type="submit">Demander</button></form>
-      <div id="aiOut" class="prose muted">Le tuteur s'appuie sur la matière encodée pour ce cours${c.content?"":" (vide pour l'instant : réponses générales)"}.</div></section>`;
+      <div id="aiOut" class="prose muted">${c.content?"Le tuteur s'appuie uniquement sur la matière encodée pour ce cours.":"Indisponible : aucune matière encodée pour ce cours. Envoie d'abord tes fichiers à Claude."}</div></section>`;
     body.querySelectorAll("[data-ai]").forEach(b=>b.onclick=()=>tutor(c,b.dataset.ai));
     $("#askf").onsubmit=e=>{e.preventDefault();const q=$("#askIn").value.trim();if(q)tutor(c,"ask",q)};
   }else if(courseTab==="quiz"){
@@ -631,8 +631,8 @@ function editCourse(c){
   const d=$("#dlg");d.innerHTML=`<form class="form" method="dialog" id="cf"><h2 style="font-size:28px">${c?"Modifier le cours":"Nouveau cours"}</h2>
   <label>Intitulé<input type="text" id="cName" required value="${esc(v.name)}"></label>
   <div class="grid g2"><label>Code<input type="text" id="cCode" value="${esc(v.code)}" placeholder="Ex. GEST0001"></label><label>Crédits ECTS<input type="number" id="cEcts" min="0" max="30" value="${esc(v.ects)}"></label></div>
-  <div class="grid g2"><label>Quadrimestre<select id="cQ">${["Q1","Q2","Annuel"].map(q=>`<option ${v.quadri===q?"selected":""}>${q}</option>`).join("")}</select></label><label>Date d'examen<input type="date" id="cExam" value="${esc(v.examDate)}"></label></div>
-  <label>Titulaire<input type="text" id="cProf" value="${esc(v.prof)}"></label>
+  <div class="grid g2"><label>Quadrimestre<select id="cQ">${[["","—"],["Q1","Q1"],["Q2","Q2"],["Annuel","Annuel"]].map(([q,l])=>`<option value="${q}" ${v.quadri===q?"selected":""}>${l}</option>`).join("")}</select></label><label>Date d'examen<input type="date" id="cExam" value="${esc(v.examDate)}"></label></div>
+  <label>UER / Titulaire<input type="text" id="cProf" value="${esc(v.prof)}"></label>
   <label>Matière (notes, syllabus, Markdown accepté)<textarea id="cContent">${esc(v.content)}</textarea></label>
   <div class="row" style="justify-content:space-between">${c?`<button class="btn ghost" value="delete" style="color:var(--bad)">Supprimer</button>`:"<span></span>"}<div class="row"><button class="btn ghost" value="cancel">Annuler</button><button class="btn primary" value="ok">Enregistrer</button></div></div></form>`;
   d.showModal();
@@ -650,10 +650,11 @@ function editCourse(c){
 
 /* ---------- Tuteur & quiz (Claude) ---------- */
 function ctx(c){return `Cours : ${c.name}${c.code?" ("+c.code+")":""}, HEC Liège – École de gestion de l'Université de Liège.${c.ects?" "+c.ects+" ECTS.":""}\nChapitres : ${(c.chapters||[]).map(x=>x.t).join(" ; ")||"non précisés"}.\nMatière fournie par l'étudiant :\n"""\n${(c.content||"(aucune)").slice(0,60000)}\n"""`}
-const TUTOR_STYLE="Tu es un tuteur exigeant et bienveillant pour un étudiant de HEC Liège qui aime l'art, la philosophie et la lecture. Réponds en français, clair et structuré, en Markdown simple (titres ##, listes, **gras**). Appuie-toi d'abord sur la matière fournie ; signale quand tu sors de celle-ci. Une analogie tirée de l'art, de la philosophie ou de la littérature est bienvenue si elle éclaire vraiment. Termine par une question de rappel pour vérifier la compréhension.";
+const TUTOR_STYLE="Tu es un tuteur exigeant et bienveillant pour un étudiant de HEC Liège qui aime l'art, la philosophie et la lecture. Réponds en français, clair et structuré, en Markdown simple (titres ##, listes, **gras**). Appuie-toi UNIQUEMENT sur la matière fournie : n'ajoute aucune notion, définition, formule ou chiffre absent de celle-ci. Si la réponse n'y figure pas, dis-le clairement au lieu d'inventer. Une analogie tirée de l'art, de la philosophie ou de la littérature est bienvenue si elle éclaire vraiment. Termine par une question de rappel pour vérifier la compréhension.";
 let aiCtl=null;
 async function tutor(c,kind,q){
   const out=$("#aiOut");const sample=await cap("sample");
+  if(!c.content){out.textContent="Aucune matière encodée pour ce cours : rien à expliquer sans tes fichiers.";return}
   if(!sample){out.textContent="Le tuteur n'est pas disponible dans cette vue. Ouvre l'app depuis claude.ai.";return}
   const asks={explain:"Identifie les 3 concepts les plus difficiles de ce cours et explique le premier en profondeur, avec un exemple chiffré si pertinent.",sheet:"Rédige une fiche de synthèse d'une page : définitions clés, formules, mécanismes, pièges classiques.",plan:`Construis un plan de révision jour par jour jusqu'à l'examen${c.examDate?" du "+c.examDate+" (aujourd'hui : "+dayKey()+")":""}, avec des blocs de 50 minutes et des séances de rappel espacées.`,exam:"Liste 8 questions d'examen probables, de la plus simple à la plus exigeante, avec pour chacune les éléments de réponse attendus.",ask:q};
   if(aiCtl)aiCtl.abort();aiCtl=new AbortController();
@@ -663,10 +664,11 @@ async function tutor(c,kind,q){
 }
 async function quiz(c,chap){
   const out=$("#quizOut");const sample=await cap("sample");
+  if(!c.content){out.textContent="Aucune matière encodée pour ce cours : pas de quiz sans tes fichiers.";return}
   if(!sample){out.textContent="Le quiz n'est pas disponible dans cette vue.";return}
   out.classList.remove("muted");out.innerHTML=`<p class="muted">Préparation des questions…</p>`;$("#qGo").disabled=true;
   try{
-    const r=await sample.json(`${ctx(c)}\n\nCrée 5 questions à choix multiples de niveau examen universitaire${chap?" sur le chapitre « "+chap+" »":""}, en français. Varie : définition, application chiffrée, piège conceptuel. Réponds UNIQUEMENT avec ce JSON : {"questions":[{"q":"énoncé","choices":["A","B","C","D"],"answer":0,"why":"explication courte"}]}`,{cache:false});
+    const r=await sample.json(`${ctx(c)}\n\nCrée 5 questions à choix multiples de niveau examen universitaire${chap?" sur le chapitre « "+chap+" »":""}, en français, basées EXCLUSIVEMENT sur la matière fournie (aucune notion extérieure). Varie : définition, application chiffrée, piège conceptuel. Réponds UNIQUEMENT avec ce JSON : {"questions":[{"q":"énoncé","choices":["A","B","C","D"],"answer":0,"why":"explication courte"}]}`,{cache:false});
     const qs=(r&&r.questions)||[];let score=0,answered=0;
     out.innerHTML=qs.map((x,i)=>`<div class="q" data-q="${i}"><div style="font-weight:500">${i+1}. ${esc(x.q)}</div><div class="opts">${(x.choices||[]).map((o,j)=>`<button data-j="${j}">${esc(o)}</button>`).join("")}</div><div class="why" hidden>${esc(x.why)}</div></div>`).join("")+`<p id="score" class="muted"></p>`;
     out.querySelectorAll(".q").forEach(el=>{const x=qs[+el.dataset.q];el.querySelectorAll("button").forEach(b=>b.onclick=()=>{if(el.dataset.done)return;el.dataset.done=1;answered++;const ok=+b.dataset.j===+x.answer;if(ok)score++;b.classList.add(ok?"right":"wrong");el.querySelector(`[data-j="${x.answer}"]`).classList.add("right");el.querySelector(".why").hidden=false;if(answered===qs.length){$("#score").textContent=`Score : ${score}/${qs.length}. ${score>=4?"Solide.":score>=3?"Presque. Revois les erreurs.":"Retour à la matière, puis recommence."}`}})});
@@ -868,7 +870,7 @@ async function importIcs(text){
   for(const e of evs){
     if(!e.DTSTART||!e.SUMMARY)continue;const s=parseIcsDate(e.DTSTART.v),en=e.DTEND?parseIcsDate(e.DTEND.v):null;if(!s||!s.time)continue;
     const base={title:e.SUMMARY.v.trim(),location:e.LOCATION?e.LOCATION.v.trim():"",kind:guessKind(e.SUMMARY.v),start:s.time,end:en&&en.time?en.time:s.time};
-    const codeM=base.title.match(/\b([A-Z]{4}\d{4})/);if(codeM){const c=S.courses.find(x=>(x.code||"").toUpperCase()===codeM[1]);if(c)base.course=c.id}
+    const codeM=base.title.match(/\b([A-Z]{4}\d{4})/);if(codeM){const c=S.courses.find(x=>(x.code||"").toUpperCase().includes(codeM[1]));if(c)base.course=c.id}
     const rr=e.RRULE&&e.RRULE.v;
     if(rr&&/FREQ=WEEKLY/.test(rr)){const cnt=+(rr.match(/COUNT=(\d+)/)||[])[1]||0;const until=(rr.match(/UNTIL=(\d{8})/)||[])[1];const untilIso=until?`${until.slice(0,4)}-${until.slice(4,6)}-${until.slice(6,8)}`:null;const ex=new Set(Object.keys(e).filter(k=>k==="EXDATE").map(k=>parseIcsDate(e[k].v.split(",")[0])?.date));
       let d=new Date(s.date+"T12:00");for(let n=0;n<60;n++){const iso=dayKey(d);if(untilIso&&iso>untilIso)break;if(cnt&&n>=cnt)break;if(!ex.has(iso))out.push({...base,date:iso});d.setDate(d.getDate()+7)}}
